@@ -1,9 +1,7 @@
-import java.io.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import java.util.Iterator;
 
 class Post {
     private int postID;
@@ -16,15 +14,20 @@ class Post {
     private int upvotes;
     private int downvotes;
 
-    private List<Comment> comments; // Store comments associated with the post
-    private static int nextPostID = 1; // Initialize to 1, increment for each new post
+    private List<Comment> comments;
+
+    private static int nextPostID = 1;
 
 
-    public Post() {
-        // Constructor
+    public Post(String title, String content, User author) {
         comments = new ArrayList<Comment>();
-
+        this.postID = generateUniquePostID();
+        this.title = title;
+        this.content = content;
+        this.author = author;
+        this.timestamp = TimestampUtil.getCurrentTimestamp(); // Use the TimestampUtil class for timestamp
     }
+
 
     public int getPostID() {
         return postID;
@@ -100,35 +103,22 @@ class Post {
         // Implement code to add a comment to the post
         comments.add(comment);
     }
-
-
-    public Post createPost(String title, String content, User author) {
-        int newPostID = generateUniquePostID();
-
-        String timestamp = getCurrentTimestamp();
-
-        Post newPost = new Post();
-        newPost.setPostID(newPostID);
-        newPost.setTitle(title);
-        newPost.setContent(content);
-        newPost.setAuthor(author);
-        newPost.setTimestamp(timestamp);
-
-        // Save the new post to your data storage mechanism
-
-        return newPost;
+    public void deleteComment(Comment comment) {
+        Iterator<Comment> iterator = comments.iterator();
+        while (iterator.hasNext()) {
+            Comment c = iterator.next();
+            if (c.equals(comment)) {
+                iterator.remove();
+            }
+        }
     }
+
+
 
     private int generateUniquePostID() {
         int uniqueID = nextPostID;
         nextPostID++; // Increment for the next post
         return uniqueID;
-    }
-
-    private String getCurrentTimestamp() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = new Date();
-        return dateFormat.format(date);
     }
 
 

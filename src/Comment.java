@@ -1,4 +1,7 @@
+import java.io.Serializable;
+
 class Comment {
+    private static int nextCommentID = 1; // Initialize to 1, increment for each new user
     private int commentID;
     private Post post; // Reference to the associated post
     private User author;
@@ -7,15 +10,22 @@ class Comment {
     private int upvotes;
     private int downvotes;
 
-    public Comment(int commentID, Post post, User author, String content) {
-        this.commentID = commentID;
+    public Comment(Post post, User author, String content) {
+        this.commentID = generateUniqueCommentID();
         this.post = post;
         this.author = author;
         this.content = content;
-        this.timestamp = getCurrentTimestamp();
+        this.timestamp = TimestampUtil.getCurrentTimestamp();
         this.upvotes = 0;
         this.downvotes = 0;
     }
+
+    private static int generateUniqueCommentID() {
+        int uniqueID = nextCommentID;
+        nextCommentID++; // Increment for the next user
+        return uniqueID;
+    }
+
 
     // Getters and setters for attributes
 
@@ -80,6 +90,6 @@ class Comment {
     }
 
     public int getDownvotes() {
-        return  downvotes;
+        return downvotes;
     }
 }

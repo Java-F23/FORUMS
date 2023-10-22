@@ -3,16 +3,31 @@ import java.util.List;
 import java.util.ArrayList;
 
 class User {
+    private static int nextUserID = 1; // Initialize to 1, increment for each new user
     private int userID;
     private String username;
     private String password;
     private String userType;
+    private final String createdAt;
 
-    public User(int userID, String username, String password, String userType){
-        this.userID = userID;
+
+
+    public User(String username, String password, String userType) {
+        this.userID = generateUniqueUserID();
         this.username = username;
         this.password = password;
         this.userType = userType;
+        this.createdAt = TimestampUtil.getCurrentTimestamp();
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    private static int generateUniqueUserID() {
+        int uniqueID = nextUserID;
+        nextUserID++; // Increment for the next user
+        return uniqueID;
     }
 
     public int getUserID() {
@@ -47,11 +62,17 @@ class User {
         this.userType = type;
     }
 
-    public void saveToFile() {
-        // Implement code to save user data to a file
+    public void editPost(Post post, String newContent) {
+        if (this.equals(post.getAuthor())) {
+            post.setContent(newContent);
+        }
     }
 
-    public void readFromFile() {
-        // Implement code to read user data from a file
+    public void editComment(Comment comment, String newContent) {
+        if (this.equals(comment.getAuthor())) {
+            comment.setContent(newContent);
+        }
     }
+
+
 }

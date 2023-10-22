@@ -1,3 +1,4 @@
+import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -27,40 +28,48 @@ class DataStorageManager {
         this.users = users;
     }
 
-    public void writePostData(Post post) {
+    public void storePostData(Post post) {
         posts.add(post);
     }
-    public void saveToDataStorage(Post post) {
-        writePostData(post);
-    }
-    public Post readFromDataStorage(int postID) {
-        List<Post> allPosts = readAllPosts();
 
-        for (Post post : allPosts) {
-            if (post.getPostID() == postID) {
-                return post;
-            }
+    public void storeCommentData(Comment comment) {
+        comments.add(comment);
+    }
+
+    public void editPost(Post post, String newTitle, String newContent) {
+        post.setTitle(newTitle);
+        post.setContent(newContent);
+    }
+
+    public void editComment(Comment comment, String newContent) {
+        comment.setContent(newContent);
+    }
+
+    public void deletePost(Post post) {
+        posts.remove(post);
+        // Remove associated comments
+        for (Comment comment : post.getComments()) {
+            comments.remove(comment);
         }
-        return null;
     }
 
-    public List<Comment> readCommentDataFromFile() {
-        return comments;
+    public void deleteComment(Comment comment) {
+        // Ensure the comment is removed from its associated post
+        if (comment.getPost() != null) {
+            comment.getPost().deleteComment(comment);
+        }
+        comments.remove(comment);
     }
 
-    public void writeCommentDataToFile(List<Comment> comments) {
-        this.comments = comments;
+    public void storeAdminActionData(AdministrativeAction action) {
+        adminActions.add(action);
     }
 
     public List<AdministrativeAction> readAdminActionDataFromFile() {
         return adminActions;
     }
 
-    public void writeAdminActionDataToFile(List<AdministrativeAction> actions) {
-        this.adminActions = actions;
-    }
     public List<Post> readAllPosts() {
         return posts;
     }
-
 }
