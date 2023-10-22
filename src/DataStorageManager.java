@@ -11,6 +11,18 @@ class DataStorageManager {
         return users;
     }
 
+    public List<Post> searchPosts(String keyword) {
+        List<Post> matchingPosts = new ArrayList<>();
+
+        for (Post post : posts) {
+            if (post.getTitle().contains(keyword) || post.getContent().contains(keyword)) {
+                matchingPosts.add(post);
+            }
+        }
+
+        return matchingPosts;
+    }
+
     public void writeUserDataToFile(List<User> users) {
         this.users = users;
     }

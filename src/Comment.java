@@ -74,4 +74,12 @@ class Comment {
     public void readFromFile() {
         // Implement code to read comment data from a file
     }
+
+    public int getUpvotes() {
+        return upvotes;
+    }
+
+    public int getDownvotes() {
+        return  downvotes;
+    }
 }

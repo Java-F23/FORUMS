@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-
 class Post {
     private int postID;
     private String title;
@@ -14,6 +13,9 @@ class Post {
     private String timestamp;
     private int viewCount;
     private int likeCount;
+    private int upvotes;
+    private int downvotes;
+
     private List<Comment> comments; // Store comments associated with the post
     private static int nextPostID = 1; // Initialize to 1, increment for each new post
 
@@ -127,6 +129,23 @@ class Post {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+
+    public void upvote() {
+        upvotes++;
+    }
+
+    public void downvote() {
+        downvotes++;
+    }
+
+    public int getUpvotes() {
+        return upvotes;
+    }
+
+    public int getDownvotes() {
+        return downvotes;
     }
 
 }
