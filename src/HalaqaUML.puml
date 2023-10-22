@@ -1,0 +1,107 @@
+@startuml
+
+class User {
+  - userID: int
+  - username: String
+  - password: String
+  - userType: String
+  + User()
+  + getUserID(): int
+  + getUsername(): String
+  + getPassword(): String
+  + getUserType(): String
+  + setUserID(id: int)
+  + setUsername(name: String)
+  + setPassword(pass: String)
+  + setUserType(type: String)
+  + saveToFile()
+  + readFromFile()
+}
+
+class Post {
+  - postID: int
+  - title: String
+  - content: String
+  - author: User
+  - timestamp: String
+  - viewCount: int
+  - likeCount: int
+  + Post()
+  + getPostID(): int
+  + getTitle(): String
+  + getContent(): String
+  + getAuthor(): User
+  + getTimestamp(): String
+  + getViewCount(): int
+  + getLikeCount(): int
+  + setPostID(id: int)
+  + setTitle(title: String)
+  + setContent(content: String)
+  + setAuthor(author: User)
+  + setTimestamp(timestamp: String)
+  + setViewCount(count: int)
+  + setLikeCount(count: int)
+  + saveToFile()
+  + readFromFile()
+  + updateViewCount()
+  + updateLikeCount()
+}
+
+class Comment {
+  - commentID: int
+  - post: Post
+  - author: User
+  - content: String
+  - timestamp: String
+  + Comment()
+  + getCommentID(): int
+  + getPost(): Post
+  + getAuthor(): User
+  + getContent(): String
+  + getTimestamp(): String
+  + setCommentID(id: int)
+  + setPost(post: Post)
+  + setAuthor(author: User)
+  + setContent(content: String)
+  + setTimestamp(timestamp: String)
+  + saveToFile()
+  + readFromFile()
+}
+
+class AdministrativeAction {
+  - actionID: int
+  - actor: User
+  - target: String
+  - actionType: String
+  - timestamp: String
+  + AdministrativeAction()
+  + getActionID(): int
+  + getActor(): User
+  + getTarget(): String
+  + getActionType(): String
+  + getTimestamp(): String
+  + setActionID(id: int)
+  + setActor(actor: User)
+  + setTarget(target: String)
+  + setActionType(actionType: String)
+  + setTimestamp(timestamp: String)
+  + saveToFile()
+  + readFromFile()
+}
+
+class DataStorageManager {
+  + readUserDataFromFile()
+  + writeUserDataToFile()
+  + readPostDataFromFile()
+  + writePostDataToFile()
+  + readCommentDataFromFile()
+  + writeCommentDataToFile()
+  + readAdminActionDataFromFile()
+  + writeAdminActionDataToFile()
+}
+
+User -- Post: author
+Post -- Comment: comment
+User -- AdministrativeAction: actor
+
+@enduml
