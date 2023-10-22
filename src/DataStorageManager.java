@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
-
+import java.util.Date;
 class DataStorageManager {
     private List<User> users = new ArrayList<>();
     private List<Post> posts = new ArrayList<>();
@@ -72,4 +72,18 @@ class DataStorageManager {
     public List<Post> readAllPosts() {
         return posts;
     }
+
+    public List<Post> searchPostsByDateRange(Date startDate, Date endDate) {
+        List<Post> matchingPosts = new ArrayList<>();
+
+        for (Post post : posts) {
+            Date postTimestamp = post.getTimestamp();
+            if (postTimestamp.compareTo(startDate) >= 0 && postTimestamp.compareTo(endDate) <= 0) {
+                matchingPosts.add(post);
+            }
+        }
+
+        return matchingPosts;
+    }
+
 }

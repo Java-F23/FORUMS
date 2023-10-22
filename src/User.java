@@ -1,6 +1,8 @@
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 class User {
     private static int nextUserID = 1; // Initialize to 1, increment for each new user
@@ -8,7 +10,7 @@ class User {
     private String username;
     private String password;
     private String userType;
-    private final String createdAt;
+    private final Date createdAt;
 
 
 
@@ -17,10 +19,10 @@ class User {
         this.username = username;
         this.password = password;
         this.userType = userType;
-        this.createdAt = TimestampUtil.getCurrentTimestamp();
+        this.createdAt = new Date();
     }
 
-    public String getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 

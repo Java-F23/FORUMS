@@ -1,4 +1,6 @@
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 class Comment {
     private static int nextCommentID = 1; // Initialize to 1, increment for each new user
@@ -6,7 +8,7 @@ class Comment {
     private Post post; // Reference to the associated post
     private User author;
     private String content;
-    private String timestamp;
+    private Date timestamp;
     private int upvotes;
     private int downvotes;
 
@@ -15,7 +17,7 @@ class Comment {
         this.post = post;
         this.author = author;
         this.content = content;
-        this.timestamp = TimestampUtil.getCurrentTimestamp();
+        this.timestamp = new Date();
         this.upvotes = 0;
         this.downvotes = 0;
     }
@@ -69,13 +71,10 @@ class Comment {
         this.content = content;
     }
 
-    public String getCurrentTimestamp() {
+    public Date getCurrentTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
-    }
 
     public void saveToFile() {
         // Implement code to save comment data to a file

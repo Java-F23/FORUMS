@@ -2,18 +2,18 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 
 class Post {
     private int postID;
     private String title;
     private String content;
     private User author;
-    private String timestamp;
+    private final Date timestamp;
     private int viewCount;
     private int likeCount;
-    private int upvotes;
-    private int downvotes;
-
     private List<Comment> comments;
 
     private static int nextPostID = 1;
@@ -25,7 +25,7 @@ class Post {
         this.title = title;
         this.content = content;
         this.author = author;
-        this.timestamp = TimestampUtil.getCurrentTimestamp(); // Use the TimestampUtil class for timestamp
+        this.timestamp = new Date(); // Use the current date and time
     }
 
 
@@ -61,12 +61,8 @@ class Post {
         this.author = author;
     }
 
-    public String getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
     }
 
     public int getViewCount() {
@@ -85,13 +81,11 @@ class Post {
         this.likeCount = count;
     }
 
-    public void updateViewCount() {
-        // Implement code to update view count
+    public void incrementViewCount() {
         viewCount++;
     }
 
-    public void updateLikeCount() {
-        // Implement code to update like count
+    public void incrementLikeCount() {
         likeCount++;
     }
 
@@ -122,20 +116,5 @@ class Post {
     }
 
 
-    public void upvote() {
-        upvotes++;
-    }
-
-    public void downvote() {
-        downvotes++;
-    }
-
-    public int getUpvotes() {
-        return upvotes;
-    }
-
-    public int getDownvotes() {
-        return downvotes;
-    }
 
 }
