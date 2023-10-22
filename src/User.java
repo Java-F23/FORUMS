@@ -12,7 +12,7 @@ class User {
     private String userType;
     private final Date createdAt;
 
-
+    private List<Post> favoritePosts; // Store favorite posts
 
     public User(String username, String password, String userType) {
         this.userID = generateUniqueUserID();
@@ -20,7 +20,24 @@ class User {
         this.password = password;
         this.userType = userType;
         this.createdAt = new Date();
+        this.favoritePosts = new ArrayList<>(); // Initialize the list of favorite posts
     }
+
+    public void addFavoritePost(Post post) {
+        // Add the post to the list of favorite posts
+        favoritePosts.add(post);
+    }
+
+    public void removeFavoritePost(Post post) {
+        // Remove the post from the list of favorite posts
+        favoritePosts.remove(post);
+    }
+
+    public List<Post> getFavoritePosts() {
+        // Retrieve the list of favorite posts
+        return favoritePosts;
+    }
+
 
     public Date getCreatedAt() {
         return createdAt;
