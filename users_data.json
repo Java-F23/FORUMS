@@ -1,0 +1,52 @@
+[
+  {
+    "username": "Muhammad",
+    "password": "password1",
+    "userType": "NORMAL_USER"
+  },
+  {
+    "username": "Amir",
+    "password": "password2",
+    "userType": "ADMIN"
+  },
+  {
+    "username": "Abdullah",
+    "password": "password3",
+    "userType": "NORMAL_USER"
+  },
+  {
+    "username": "Omar",
+    "password": "password4",
+    "userType": "NORMAL_USER"
+  },
+  {
+    "username": "Hassan",
+    "password": "password5",
+    "userType": "ADMIN"
+  },
+  {
+    "username": "Ahmad",
+    "password": "password6",
+    "userType": "NORMAL_USER"
+  },
+  {
+    "username": "Ibrahim",
+    "password": "password7",
+    "userType": "NORMAL_USER"
+  },
+  {
+    "username": "Fatima",
+    "password": "password8",
+    "userType": "NORMAL_USER"
+  },
+  {
+    "username": "Abdul",
+    "password": "password9",
+    "userType": "NORMAL_USER"
+  },
+  {
+    "username": "Ahmed",
+    "password": "password10",
+    "userType": "NORMAL_USER"
+  }
+]

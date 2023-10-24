@@ -4,18 +4,20 @@ class User {
   - userID: int
   - username: String
   - password: String
-  - userType: String
-  + User()
-  + getUserID(): int
-  + getUsername(): String
-  + getPassword(): String
-  + getUserType(): String
-  + setUserID(id: int)
-  + setUsername(name: String)
-  + setPassword(pass: String)
-  + setUserType(type: String)
-  + saveToFile()
-  + readFromFile()
+  - userType: UserType
+  - createdAt: Date
+  - favoritePosts: ArrayList<Post>
+  + User(username: String, password: String, userType: UserType)
+  + addFavoritePost(post: Post): void
+  + removeFavoritePost(post: Post): void
+  + getFavoritePosts(): ArrayList<Post>
+  + editPost(post: Post, newContent: String): void
+  + editComment(comment: Comment, newContent: String): void
+}
+
+enum UserType {
+  NORMAL
+  ADMIN
 }
 
 class Post {
@@ -23,85 +25,91 @@ class Post {
   - title: String
   - content: String
   - author: User
-  - timestamp: String
+  - timestamp: Date
   - viewCount: int
   - likeCount: int
-  + Post()
-  + getPostID(): int
-  + getTitle(): String
-  + getContent(): String
+  - comments: ArrayList<Comment>
+  + Post(title: String, content: String, author: User)
+  + setTitle(title: String): void
+  + setContent(content: String): void
   + getAuthor(): User
-  + getTimestamp(): String
-  + getViewCount(): int
-  + getLikeCount(): int
-  + setPostID(id: int)
-  + setTitle(title: String)
-  + setContent(content: String)
-  + setAuthor(author: User)
-  + setTimestamp(timestamp: String)
-  + setViewCount(count: int)
-  + setLikeCount(count: int)
-  + saveToFile()
-  + readFromFile()
-  + updateViewCount()
-  + updateLikeCount()
+  + getComments(): ArrayList<Comment>
+  + addComment(comment: Comment): void
+  + deleteComment(comment: Comment): void
 }
 
 class Comment {
   - commentID: int
-  - post: Post
-  - author: User
   - content: String
-  - timestamp: String
-  + Comment()
-  + getCommentID(): int
-  + getPost(): Post
+  - author: User
+  - post: Post
+  - upvotes: int
+  - downvotes: int
+  + Comment(content: String, author: User, post: Post)
+  + setContent(content: String): void
   + getAuthor(): User
-  + getContent(): String
-  + getTimestamp(): String
-  + setCommentID(id: int)
-  + setPost(post: Post)
-  + setAuthor(author: User)
-  + setContent(content: String)
-  + setTimestamp(timestamp: String)
-  + saveToFile()
-  + readFromFile()
-}
-
-class AdministrativeAction {
-  - actionID: int
-  - actor: User
-  - target: String
-  - actionType: String
-  - timestamp: String
-  + AdministrativeAction()
-  + getActionID(): int
-  + getActor(): User
-  + getTarget(): String
-  + getActionType(): String
-  + getTimestamp(): String
-  + setActionID(id: int)
-  + setActor(actor: User)
-  + setTarget(target: String)
-  + setActionType(actionType: String)
-  + setTimestamp(timestamp: String)
-  + saveToFile()
-  + readFromFile()
+  + getPost(): Post
+  + upvote(): void
+  + downvote(): void
 }
 
 class DataStorageManager {
-  + readUserDataFromFile()
-  + writeUserDataToFile()
-  + readPostDataFromFile()
-  + writePostDataToFile()
-  + readCommentDataFromFile()
-  + writeCommentDataToFile()
-  + readAdminActionDataFromFile()
-  + writeAdminActionDataToFile()
+  - users: ArrayList<User>
+  - posts: ArrayList<Post>
+  - comments: ArrayList<Comment>
+  - reports: ArrayList<Report>
+  + reportPost(post: Post, reporter: User, reason: String): void
+  + reportComment(comment: Comment, reporter: User, reason: String): void
+  + getReports(): ArrayList<Report>
+  + resolveReport(report: Report): void
+  + deleteReportedItem(report: Report): void
+  + readUserDataFromFile(): ArrayList<User>
+  + searchPosts(keyword: String): ArrayList<Post>
+  + getComments(): ArrayList<Comment>
+  + writeUserDataToFile(users: ArrayList<User>): void
+  + storePostData(post: Post): void
+  + storeCommentData(comment: Comment): void
+  + filterPostsByAuthor(authorUsername: String): ArrayList<Post>
+  + editPost(post: Post, newTitle: String, newContent: String): void
+  + editComment(comment: Comment, newContent: String): void
+  + deletePost(post: Post): void
+  + sortPostsByPopularity(): ArrayList<Post>
+  + sortPostsByDate(): ArrayList<Post>
+  + deleteComment(comment: Comment): void
+  + readAllPosts(): ArrayList<Post>
+  + searchPostsByDateRange(startDate: Date, endDate: Date): ArrayList<Post>
 }
 
-User -- Post: author
-Post -- Comment: comment
-User -- AdministrativeAction: actor
+class ForumTest {
+  + main(args: String[]): void
+}
+
+class Report {
+  - reporter: User
+  - reportedItem: Serializable
+  - reason: String
+  - resolved: boolean
+  + Report(reporter: User, reportedItem: Serializable, reason: String)
+  + resolveReport(): void
+  + isResolved(): boolean
+}
+
+enum ActionType {
+  DELETE_POST
+  DELETE_COMMENT
+  SKIP
+}
+
+User --|> Post
+User --|> Comment
+Post --|> Comment
+Comment --|> Post
+Report --|> User
+Report --|> Comment
+Report --|> Post
+DataStorageManager --|> User
+DataStorageManager --|> Post
+DataStorageManager --|> Comment
+DataStorageManager --|> Report
 
 @enduml

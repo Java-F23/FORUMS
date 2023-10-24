@@ -1,17 +1,19 @@
-import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Comparator;
+import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
+
+
+import com.google.gson.Gson;
 
 class DataStorageManager {
-    private List<User> users = new ArrayList<>();
-    private List<Post> posts = new ArrayList<>();
-    private List<Comment> comments = new ArrayList<>();
-    private List<AdministrativeAction> adminActions = new ArrayList<>();
-
-    private List<Report> reports = new ArrayList<>();
-
+    private ArrayList<User> users = new ArrayList<>();
+    private ArrayList<Post> posts = new ArrayList<>();
+    private ArrayList<Comment> comments = new ArrayList<>();
+    private ArrayList<Report> reports = new ArrayList<>();
 
     public void reportPost(Post post, User reporter, String reason) {
         Report report = new Report(reporter, post, reason);
@@ -23,7 +25,7 @@ class DataStorageManager {
         reports.add(report);
     }
 
-    public List<Report> getReports() {
+    public ArrayList<Report> getReports() {
         return reports;
     }
 
@@ -32,57 +34,175 @@ class DataStorageManager {
     }
 
     public void deleteReportedItem(Report report) {
-        if (report.getReportedItem() instanceof Post) {
-            Post post = (Post) report.getReportedItem();
-            posts.remove(post);
-        } else if (report.getReportedItem() instanceof Comment) {
-            Comment comment = (Comment) report.getReportedItem();
-            comments.remove(comment);
+        Object reportedItem = report.getReportedItem();
+        if (reportedItem instanceof Post) {
+            deletePost((Post) reportedItem);
+        } else if (reportedItem instanceof Comment) {
+            deleteComment((Comment) reportedItem);
         }
         reports.remove(report);
     }
 
-    public List<User> readUserDataFromFile() {
+    public ArrayList<User> getUsers() {
         return users;
     }
 
-    public List<Post> searchPosts(String keyword) {
-        List<Post> matchingPosts = new ArrayList<>();
-
-        for (Post post : posts) {
-            if (post.getTitle().contains(keyword) || post.getContent().contains(keyword)) {
-                matchingPosts.add(post);
-            }
-        }
-
-        return matchingPosts;
+    public void addUser(User user) {
+        users.add(user);
     }
 
-    public List<Comment> getComments() {
+    public ArrayList<Post> getPosts() {
+        return posts;
+    }
+
+    public Post getPostById(int postID) {
+        for (Post post : posts) {
+            if (post.getPostID() == postID) {
+                return post;
+            }
+        }
+        return null;
+    }
+
+    public void loadTestData(ArrayList<User> users, ArrayList<Post> posts, ArrayList<Comment> comments) {
+        this.users = users;
+        this.posts = posts;
+        this.comments = comments;
+    }
+
+    public ArrayList<Comment> getComments() {
         return comments;
     }
 
-    public void writeUserDataToFile(List<User> users) {
-        this.users = users;
+    public Comment getCommentById(int commentID) {
+        for (Comment comment : comments) {
+            if (comment.getCommentID() == commentID) {
+                return comment;
+            }
+        }
+        return null;
     }
 
-    public void storePostData(Post post) {
+    public void loadUsersDataFromJSON(String jsonFilePath) {
+        try (FileReader reader = new FileReader(jsonFilePath)) {
+            Gson gson = new Gson();
+            User[] userArray = gson.fromJson(reader, User[].class);
+            // Add users to the user list
+            for (User user : userArray) {
+
+                addUser(new User(user.getUsername(), user.getPassword(), user.getUserType()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadPostsDataFromJSON(String jsonFilePath) {
+        try (FileReader reader = new FileReader(jsonFilePath)) {
+            Gson gson = new Gson();
+            Post[] postArray = gson.fromJson(reader, Post[].class);
+            // Assign random authors to the posts and add them to the post list
+            for (Post post : postArray) {
+                User randomAuthor = getRandomUser();
+
+                if (randomAuthor != null) {
+                    post.setAuthor(randomAuthor);
+                    addPost(new Post(post.getTitle(), post.getContent(), randomAuthor));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadCommentsDataFromJSON(String jsonFilePath) {
+        try (FileReader reader = new FileReader(jsonFilePath)) {
+            Gson gson = new Gson();
+            CommentData[] commentDataArray = gson.fromJson(reader, CommentData[].class);
+
+            for (CommentData commentData : commentDataArray) {
+                int postId = commentData.getPostId();
+                Post post = getPostById(postId); // Helper method to find the post by ID
+                if (post != null) {
+                    User randomAuthor = getRandomUser();
+                    Comment comment = new Comment(post, randomAuthor, commentData.getContent());
+                    addComment(comment);
+                    post.addComment(comment); // Add the comment to the corresponding post
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Define a class to represent the structure of comments data in JSON
+    class CommentData {
+        private String content;
+        private int postId;
+
+        public String getContent() {
+            return content;
+        }
+
+        public int getPostId() {
+            return postId;
+        }
+    }
+
+
+    private Post getRandomPost() {
+        List<Post> availablePosts = getPosts();
+        if (!availablePosts.isEmpty()) {
+            int randomIndex = (int) (Math.random() * availablePosts.size());
+            return availablePosts.get(randomIndex);
+        }
+        return null;
+    }
+
+    private User getRandomUser() {
+        List<User> availableUsers = getUsers();
+        if (!availableUsers.isEmpty()) {
+            int randomIndex = (int) (Math.random() * availableUsers.size());
+            return availableUsers.get(randomIndex);
+        }
+        return null;
+    }
+
+    public void addPost(Post post) {
         posts.add(post);
     }
 
-    public void storeCommentData(Comment comment) {
+    public void addComment(Comment comment) {
         comments.add(comment);
     }
-    public List<Post> filterPostsByAuthor(String authorUsername) {
-        List<Post> filteredPosts = new ArrayList<>();
 
+    public ArrayList<Post> filterPostsByAuthor(String authorUsername) {
+        ArrayList<Post> filteredPosts = new ArrayList<>();
         for (Post post : posts) {
             if (post.getAuthor().getUsername().equals(authorUsername)) {
                 filteredPosts.add(post);
             }
         }
-
         return filteredPosts;
+    }
+
+    public void upvoteComment(User user, Comment comment) {
+        if (user != null && comment != null) {
+            comment.upvote(user);
+        }
+    }
+
+    public void downvoteComment(User user, Comment comment) {
+        if (user != null && comment != null) {
+            comment.downvote(user);
+        }
+    }
+
+    public void likePost(User user, Post post) {
+        if (user != null && post != null) {
+            post.incrementLikeCount(user);
+            post.incrementViewCount(user);
+        }
     }
 
     public void editPost(Post post, String newTitle, String newContent) {
@@ -95,69 +215,62 @@ class DataStorageManager {
     }
 
     public void deletePost(Post post) {
-        // Remove associated reports
-        List<Report> reportsToRemove = new ArrayList<>();
-        for (Report report : reports) {
-            if (report.getReportedItem() == post) {
-                reportsToRemove.add(report);
+        if (posts.contains(post)) {
+            ArrayList<Report> reportsToRemove = new ArrayList<>();
+            for (Report report : reports) {
+                if (report.getReportedItem() == post) {
+                    reportsToRemove.add(report);
+                }
             }
+            reports.removeAll(reportsToRemove);
+            posts.remove(post);
         }
-        reports.removeAll(reportsToRemove);
-
-        // Remove the post
-        posts.remove(post);
     }
 
-    public List<Post> sortPostsByPopularity() {
-        List<Post> sortedPosts = new ArrayList<>(posts);
-        // Sort by the number of likes in descending order
-        sortedPosts.sort((post1, post2) -> post2.getLikeCount() - post1.getLikeCount());
+    public void deleteComment(Comment comment) {
+        if (comments.contains(comment)) {
+            ArrayList<Report> reportsToRemove = new ArrayList<>();
+            for (Report report : reports) {
+                if (report.getReportedItem() == comment) {
+                    reportsToRemove.add(report);
+                }
+            }
+            reports.removeAll(reportsToRemove);
+            comments.remove(comment);
+        }
+    }
+
+    public ArrayList<Post> sortPostsByPopularity() {
+        ArrayList<Post> sortedPosts = new ArrayList<>(posts);
+        sortedPosts.sort(Comparator.comparingInt(Post::getLikeCount).reversed());
         return sortedPosts;
     }
-    public List<Post> sortPostsByDate() {
-        List<Post> sortedPosts = new ArrayList<>(posts);
+
+    public ArrayList<Post> sortPostsByDate() {
+        ArrayList<Post> sortedPosts = new ArrayList<>(posts);
         sortedPosts.sort(Comparator.comparing(Post::getTimestamp));
         return sortedPosts;
     }
 
-
-    public void deleteComment(Comment comment) {
-        // Remove associated reports
-        List<Report> reportsToRemove = new ArrayList<>();
-        for (Report report : reports) {
-            if (report.getReportedItem() == comment) {
-                reportsToRemove.add(report);
+    public ArrayList<Post> searchPosts(String keyword) {
+        ArrayList<Post> matchingPosts = new ArrayList<>();
+        for (Post post : posts) {
+            if (post.getTitle().contains(keyword) || post.getContent().contains(keyword)) {
+                matchingPosts.add(post);
             }
         }
-        reports.removeAll(reportsToRemove);
-
-        // Remove the comment
-        comments.remove(comment);
+        return matchingPosts;
     }
 
-    public void storeAdminActionData(AdministrativeAction action) {
-        adminActions.add(action);
-    }
-
-    public List<AdministrativeAction> readAdminActionDataFromFile() {
-        return adminActions;
-    }
-
-    public List<Post> readAllPosts() {
-        return posts;
-    }
-
-    public List<Post> searchPostsByDateRange(Date startDate, Date endDate) {
-        List<Post> matchingPosts = new ArrayList<>();
-
+    public ArrayList<Post> searchPostsByDateRange(Date startDate, Date endDate) {
+        ArrayList<Post> matchingPosts = new ArrayList<>();
         for (Post post : posts) {
             Date postTimestamp = post.getTimestamp();
             if (postTimestamp.compareTo(startDate) >= 0 && postTimestamp.compareTo(endDate) <= 0) {
                 matchingPosts.add(post);
             }
         }
-
         return matchingPosts;
     }
-
 }
+

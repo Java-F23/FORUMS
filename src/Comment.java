@@ -3,9 +3,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 class Comment {
-    private static int nextCommentID = 1; // Initialize to 1, increment for each new user
+    private static int nextCommentID = 1;
     private int commentID;
-    private Post post; // Reference to the associated post
+    private Post post;
     private User author;
     private String content;
     private Date timestamp;
@@ -24,19 +24,20 @@ class Comment {
 
     private static int generateUniqueCommentID() {
         int uniqueID = nextCommentID;
-        nextCommentID++; // Increment for the next user
+        nextCommentID++;
         return uniqueID;
     }
 
-
-    // Getters and setters for attributes
-
-    public void upvote() {
-        upvotes++;
+    public void upvote(User user) {
+        if (user != null) {
+            upvotes++;
+        }
     }
 
-    public void downvote() {
-        downvotes++;
+    public void downvote(User user) {
+        if (user != null) {
+            downvotes++;
+        }
     }
 
     public int getCommentID() {
@@ -75,7 +76,6 @@ class Comment {
         return timestamp;
     }
 
-
     public void saveToFile() {
         // Implement code to save comment data to a file
     }
@@ -90,5 +90,15 @@ class Comment {
 
     public int getDownvotes() {
         return downvotes;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment ID: " + commentID + "\n" +
+                "Author: " + author.getUsername() + "\n" +
+                "Content: " + content + "\n" +
+                "Timestamp: " + timestamp + "\n" +
+                "Upvotes: " + upvotes + "\n" +
+                "Downvotes: " + downvotes + "\n";
     }
 }

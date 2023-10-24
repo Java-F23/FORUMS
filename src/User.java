@@ -1,43 +1,40 @@
-import java.io.*;
+import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
+enum UserRole {
+    NORMAL_USER, ADMIN
+}
 
 class User {
-    private static int nextUserID = 1; // Initialize to 1, increment for each new user
+    private static int nextUserID = 1;
     private int userID;
     private String username;
     private String password;
-    private String userType;
+    private UserRole userType;
     private final Date createdAt;
+    private ArrayList<Post> favoritePosts;
 
-    private List<Post> favoritePosts; // Store favorite posts
-
-    public User(String username, String password, String userType) {
+    public User(String username, String password, UserRole userType) {
         this.userID = generateUniqueUserID();
         this.username = username;
         this.password = password;
         this.userType = userType;
         this.createdAt = new Date();
-        this.favoritePosts = new ArrayList<>(); // Initialize the list of favorite posts
+        this.favoritePosts = new ArrayList<>();
     }
 
     public void addFavoritePost(Post post) {
-        // Add the post to the list of favorite posts
         favoritePosts.add(post);
     }
 
     public void removeFavoritePost(Post post) {
-        // Remove the post from the list of favorite posts
         favoritePosts.remove(post);
     }
 
-    public List<Post> getFavoritePosts() {
-        // Retrieve the list of favorite posts
+    public ArrayList<Post> getFavoritePosts() {
         return favoritePosts;
     }
-
 
     public Date getCreatedAt() {
         return createdAt;
@@ -45,7 +42,7 @@ class User {
 
     private static int generateUniqueUserID() {
         int uniqueID = nextUserID;
-        nextUserID++; // Increment for the next user
+        nextUserID++;
         return uniqueID;
     }
 
@@ -73,11 +70,11 @@ class User {
         this.password = pass;
     }
 
-    public String getUserType() {
+    public UserRole getUserType() {
         return userType;
     }
 
-    public void setUserType(String type) {
+    public void setUserType(UserRole type) {
         this.userType = type;
     }
 
@@ -93,5 +90,20 @@ class User {
         }
     }
 
+    @Override
+    public String toString() {
+        return "User ID: " + userID +
+                "\nUsername: " + username +
+                "\nUser Type: " + userType +
+                "\nCreated At: " + createdAt;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return username.equals(user.username);
+    }
 
 }

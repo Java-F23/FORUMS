@@ -14,7 +14,7 @@ class Post {
     private final Date timestamp;
     private int viewCount;
     private int likeCount;
-    private List<Comment> comments;
+    private ArrayList<Comment> comments;
 
     private static int nextPostID = 1;
 
@@ -81,15 +81,17 @@ class Post {
         this.likeCount = count;
     }
 
-    public void incrementViewCount() {
-        viewCount++;
+    public void incrementViewCount(User user) {
+        if(user != null)
+            viewCount++;
     }
 
-    public void incrementLikeCount() {
-        likeCount++;
+    public void incrementLikeCount(User user) {
+        if(user != null)
+            likeCount++;
     }
 
-    public List<Comment> getComments() {
+    public ArrayList<Comment> getComments() {
         return comments;
     }
 
@@ -114,6 +116,26 @@ class Post {
         nextPostID++; // Increment for the next post
         return uniqueID;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder postString = new StringBuilder();
+        postString.append("Post ID: ").append(postID).append("\n");
+        postString.append("Title: ").append(title).append("\n");
+        postString.append("Content: ").append(content).append("\n");
+        postString.append("Author: ").append(author.getUsername()).append("\n");
+        postString.append("Timestamp: ").append(timestamp).append("\n");
+        postString.append("View Count: ").append(viewCount).append("\n");
+        postString.append("Like Count: ").append(likeCount).append("\n");
+
+        postString.append("Comments:").append("\n");
+        for (Comment comment : comments) {
+            postString.append(comment.toString()).append("\n");
+        }
+
+        return postString.toString();
+    }
+
 
 
 
