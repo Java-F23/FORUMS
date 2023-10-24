@@ -15,6 +15,56 @@ class DataStorageManager {
     private ArrayList<Comment> comments = new ArrayList<>();
     private ArrayList<Report> reports = new ArrayList<>();
 
+
+    public Map<String, Object> generateStatistics() {
+        Map<String, Object> statistics = new HashMap<>();
+
+        // Count the number of users, posts, comments, and reports
+        int numberOfUsers = users.size();
+        int numberOfPosts = posts.size();
+        int numberOfComments = comments.size();
+        int numberOfReports = reports.size();
+
+        // Calculate the total number of interactions (upvotes, downvotes, likes, views)
+        int totalUpvotes = 0;
+        int totalDownvotes = 0;
+        int totalLikes = 0;
+        int totalViews = 0;
+
+        for (Post post : posts) {
+            totalLikes += post.getLikeCount();
+            totalViews += post.getViewCount();
+        }
+
+        for(Comment comment : comments) {
+            totalUpvotes += comment.getUpvotes();
+            totalDownvotes += comment.getDownvotes();
+
+        }
+        statistics.put("NumberOfUsers", numberOfUsers);
+        statistics.put("NumberOfPosts", numberOfPosts);
+        statistics.put("NumberOfComments", numberOfComments);
+        statistics.put("NumberOfReports", numberOfReports);
+        statistics.put("TotalUpvotes", totalUpvotes);
+        statistics.put("TotalDownvotes", totalDownvotes);
+        statistics.put("TotalLikes", totalLikes);
+        statistics.put("TotalViews", totalViews);
+
+        return statistics;
+    }
+
+    public void printStatistics(Map<String, Object> statistics) {
+        System.out.println("Statistics:");
+        System.out.println("Number of Users: " + statistics.get("NumberOfUsers"));
+        System.out.println("Number of Posts: " + statistics.get("NumberOfPosts"));
+        System.out.println("Number of Comments: " + statistics.get("NumberOfComments"));
+        System.out.println("Number of Reports: " + statistics.get("NumberOfReports"));
+        System.out.println("Total Upvotes: " + statistics.get("TotalUpvotes"));
+        System.out.println("Total Downvotes: " + statistics.get("TotalDownvotes"));
+        System.out.println("Total Likes: " + statistics.get("TotalLikes"));
+        System.out.println("Total Views: " + statistics.get("TotalViews"));
+
+    }
     public void reportPost(Post post, User reporter, String reason) {
         Report report = new Report(reporter, post, reason);
         reports.add(report);
@@ -93,7 +143,7 @@ class DataStorageManager {
                 addUser(new User(user.getUsername(), user.getPassword(), user.getUserType()));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error loading users data from JSON file: " + e.getMessage());
         }
     }
 
@@ -111,44 +161,30 @@ class DataStorageManager {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error loading posts data from JSON file: " + e.getMessage());
         }
     }
 
     public void loadCommentsDataFromJSON(String jsonFilePath) {
         try (FileReader reader = new FileReader(jsonFilePath)) {
             Gson gson = new Gson();
-            CommentData[] commentDataArray = gson.fromJson(reader, CommentData[].class);
+            String[] commentDataArray = gson.fromJson(reader, String[].class);
 
-            for (CommentData commentData : commentDataArray) {
-                int postId = commentData.getPostId();
-                Post post = getPostById(postId); // Helper method to find the post by ID
+            for(int i = 0; i < 4; i++) {
+            for (String commentData : commentDataArray) {
+                Post post = getRandomPost(); // Helper method to find the post by ID
                 if (post != null) {
                     User randomAuthor = getRandomUser();
-                    Comment comment = new Comment(post, randomAuthor, commentData.getContent());
+                    Comment comment = new Comment(post, randomAuthor, commentData);
                     addComment(comment);
                     post.addComment(comment); // Add the comment to the corresponding post
                 }
             }
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error loading comments data from JSON file: " + e.getMessage());
         }
     }
-
-    // Define a class to represent the structure of comments data in JSON
-    class CommentData {
-        private String content;
-        private int postId;
-
-        public String getContent() {
-            return content;
-        }
-
-        public int getPostId() {
-            return postId;
-        }
-    }
-
 
     private Post getRandomPost() {
         List<Post> availablePosts = getPosts();
@@ -204,6 +240,12 @@ class DataStorageManager {
             post.incrementViewCount(user);
         }
     }
+    public void viewPost(User user, Post post) {
+        if (user != null && post != null) {
+            post.incrementViewCount(user);
+        }
+    }
+
 
     public void editPost(Post post, String newTitle, String newContent) {
         post.setTitle(newTitle);

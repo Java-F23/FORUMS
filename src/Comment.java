@@ -12,6 +12,7 @@ class Comment {
     private int upvotes;
     private int downvotes;
 
+    public Comment(){}
     public Comment(Post post, User author, String content) {
         this.commentID = generateUniqueCommentID();
         this.post = post;
@@ -72,16 +73,8 @@ class Comment {
         this.content = content;
     }
 
-    public Date getCurrentTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
-    }
-
-    public void saveToFile() {
-        // Implement code to save comment data to a file
-    }
-
-    public void readFromFile() {
-        // Implement code to read comment data from a file
     }
 
     public int getUpvotes() {

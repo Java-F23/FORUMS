@@ -12,9 +12,12 @@ class User {
     private String username;
     private String password;
     private UserRole userType;
-    private final Date createdAt;
+    private Date createdAt;
     private ArrayList<Post> favoritePosts;
 
+    public User(){
+
+    }
     public User(String username, String password, UserRole userType) {
         this.userID = generateUniqueUserID();
         this.username = username;

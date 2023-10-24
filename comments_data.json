@@ -1,22 +1,22 @@
 [
-  {
-    "content": "This is the content of the first comment.",
-    "postId": 1
-  },
-  {
-    "content": "This is the content of the second comment.",
-    "postId": 2
-  },
-  {
-    "content": "This is the content of the third comment.",
-    "postId": 1
-  },
-  {
-    "content": "This is the content of the fourth comment.",
-    "postId": 3
-  },
-  {
-    "content": "This is the content of the fifth comment.",
-    "postId": 2
-  }
+  "Great post! I learned a lot from it.",
+  "I have a different opinion on this topic.",
+  "This post is very informative.",
+  "I agree with the points mentioned in this post.",
+  "Interesting post. I'd like to learn more about this.",
+  "I found this post to be confusing. Can you clarify some points?",
+  "Well written post. Thank you for sharing.",
+  "I completely disagree with the author's views.",
+  "I have a similar experience to share.",
+  "This is a great discussion. I appreciate the insights.",
+  "I have some questions about this topic. Can someone help?",
+  "I agree with the author's conclusions. Well argued.",
+  "Nice post. I'll share this with my friends.",
+  "I have a different perspective on this issue.",
+  "This post inspired me to learn more about the topic.",
+  "I have some doubts. Can someone clarify?",
+  "I enjoyed reading this post. It's well-written.",
+  "I found some factual errors in this post.",
+  "Great post! I learned a lot from it.",
+  "I have a different opinion on this topic."
 ]

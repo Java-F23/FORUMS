@@ -11,14 +11,16 @@ class Post {
     private String title;
     private String content;
     private User author;
-    private final Date timestamp;
+    private Date timestamp;
     private int viewCount;
     private int likeCount;
     private ArrayList<Comment> comments;
 
     private static int nextPostID = 1;
 
+    public Post(){
 
+    }
     public Post(String title, String content, User author) {
         comments = new ArrayList<Comment>();
         this.postID = generateUniquePostID();
@@ -99,6 +101,7 @@ class Post {
         // Implement code to add a comment to the post
         comments.add(comment);
     }
+
     public void deleteComment(Comment comment) {
         Iterator<Comment> iterator = comments.iterator();
         while (iterator.hasNext()) {
@@ -135,8 +138,5 @@ class Post {
 
         return postString.toString();
     }
-
-
-
 
 }

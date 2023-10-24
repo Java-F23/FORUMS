@@ -44,4 +44,15 @@ class Report {
     public void resolveReport() {
         resolved = true;
     }
+
+    @Override
+    public String toString() {
+        return "Report{" +
+                "reportID=" + reportID +
+                ", reporter=" + reporter +
+                ", reportedItem=" + reportedItem +
+                ", reason='" + reason + '\'' +
+                ", resolved=" + resolved +
+                '}';
+    }
 }
