@@ -10,6 +10,9 @@ public class ForumTest {
     public static void main(String[] args) {
         ProjectPopulator populate = new ProjectPopulator();
         populate.main(args);
+        DataStorageManager dataStorageManager = populate.getDataStorageManager();
+        System.out.println(dataStorageManager.getPosts().size());
+
 
 
     }

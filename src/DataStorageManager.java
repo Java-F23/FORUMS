@@ -152,12 +152,14 @@ class DataStorageManager {
             Gson gson = new Gson();
             Post[] postArray = gson.fromJson(reader, Post[].class);
             // Assign random authors to the posts and add them to the post list
-            for (Post post : postArray) {
-                User randomAuthor = getRandomUser();
+            for (int i = 0; i < 4; i++) {
+                for (Post post : postArray) {
+                    User randomAuthor = getRandomUser();
 
-                if (randomAuthor != null) {
-                    post.setAuthor(randomAuthor);
-                    addPost(new Post(post.getTitle(), post.getContent(), randomAuthor));
+                    if (randomAuthor != null) {
+                        post.setAuthor(randomAuthor);
+                        addPost(new Post(post.getTitle(), post.getContent(), randomAuthor));
+                    }
                 }
             }
         } catch (Exception e) {

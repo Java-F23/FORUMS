@@ -4,17 +4,8 @@ import java.util.Map;
 
 public class ProjectPopulator {
     public static void main(String[] args) {
-        DataStorageManager dataStorageManager = new DataStorageManager();
 
-        Map<String, Object> statistics = dataStorageManager.generateStatistics();
-        System.out.println("Before population: ");
-        dataStorageManager.printStatistics(statistics);
-
-        // Load user, post, and comment data from JSON files
-        dataStorageManager.loadUsersDataFromJSON("users_data.json");
-        dataStorageManager.loadPostsDataFromJSON("posts_data.json");
-        dataStorageManager.loadCommentsDataFromJSON("comments_data.json");
-
+        DataStorageManager dataStorageManager = getDataStorageManager();
 
         // Perform various operations on the loaded data
         User user = new User();
@@ -34,11 +25,24 @@ public class ProjectPopulator {
             dataStorageManager.viewPost(user, post);
         }
 
-        System.out.println("");
-        System.out.println("After population: ");
-        statistics = dataStorageManager.generateStatistics();
-        dataStorageManager.printStatistics(statistics);
+        // System.out.println("After population: ");
+        // statistics = dataStorageManager.generateStatistics();
+        // dataStorageManager.printStatistics(statistics);
 
 
+    }
+
+    public static DataStorageManager getDataStorageManager() {
+        DataStorageManager dataStorageManager = new DataStorageManager();
+
+        // Map<String, Object> statistics = dataStorageManager.generateStatistics();
+        // System.out.println("Before population: ");
+        // dataStorageManager.printStatistics(statistics);
+
+        // Load user, post, and comment data from JSON files
+        dataStorageManager.loadUsersDataFromJSON("users_data.json");
+        dataStorageManager.loadPostsDataFromJSON("posts_data.json");
+        dataStorageManager.loadCommentsDataFromJSON("comments_data.json");
+        return dataStorageManager;
     }
 }
