@@ -2,112 +2,129 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 public class MainPlatformFrame extends JFrame {
     private JPanel middleGrid;
+    private DataStorageManager dataStorageManager;
 
     public MainPlatformFrame() {
+    }
+
+    public MainPlatformFrame(DataStorageManager ds) {
+        dataStorageManager = ds;
+        initializeFrame();
+    }
+
+    private void initializeFrame() {
         setTitle("Halaqa Main Platform");
         setSize(1600, 900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Initialize components
+        createGridStructure();
         initializeHeader();
-        initializeGridLayout();
         initializeFooter();
 
         setVisible(true);
     }
-
     private void initializeHeader() {
-        // Create header panel
+        // Create the main header panel with a BorderLayout
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(new Color(70, 70, 70));
 
-        // Logo or title for the platform
+        // Create the left panel for the logo
+        JPanel leftPanel = new JPanel();
+        leftPanel.setBackground(new Color(70, 70, 70));
+
+        // Create the logo
         ImageIcon logo = new ImageIcon("logo_1.png");
         JLabel logoLabel = new JLabel(logo, SwingConstants.CENTER);
-
         Image image = logo.getImage();
         int newWidth = image.getWidth(null) / 30;
         int newHeight = image.getHeight(null) / 30;
         Image resizedImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-
         logoLabel = new JLabel(new ImageIcon(resizedImage), SwingConstants.CENTER);
-
         logoLabel.setForeground(Color.WHITE);
-        header.add(logoLabel, BorderLayout.WEST);
+        leftPanel.add(logoLabel);
 
-        // Navigation Bar
+        // Create the middle panel for menu items
+        JPanel middlePanel = new JPanel();
+        middlePanel.setBackground(new Color(70, 70, 70));
+
+        // Create navigation bar
         JMenuBar menuBar = new JMenuBar();
         menuBar.setBackground(new Color(70, 70, 70));
 
-        UIManager.put("MenuItem.margin", new Insets(0, 10, 0, 10));
+        // Increase the width and height of menu items
+        Dimension menuItemSize = new Dimension(200, 100);
 
-        // Adding menu items
-        String[] menuItems = {"Home", "About", "Blog", "Contact"};
+        // Adjust margin and padding
+        UIManager.put("MenuItem.margin", new Insets(10, 10, 10, 10));
+
+        String[] menuItems = {"Home", "Profile", "Settings", "Logout"};
         for (String item : menuItems) {
-            JMenuItem menuItem = new JMenuItem(item);
-            menuItem.setForeground(Color.WHITE);
-            menuItem.setBackground(new Color(70, 70, 70));
+            JMenu menu = new JMenu(item);
+            menu.setForeground(Color.WHITE);
+            menu.setBackground(new Color(70, 70, 70));
+            menu.setHorizontalAlignment(SwingConstants.CENTER); // Center-align text
+            menu.setPreferredSize(menuItemSize);
 
             // Mouse hover effect
-            menuItem.addMouseListener(new MouseAdapter() {
+            menu.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
-                    menuItem.setBackground(new Color(90, 90, 90));
+                    menu.setBackground(new Color(200, 90, 90));
+                    menu.setForeground(Color.CYAN); // Change text color on hover
                 }
 
                 @Override
                 public void mouseExited(MouseEvent e) {
-                    menuItem.setBackground(new Color(70, 70, 70));
+                    menu.setBackground(new Color(70, 70, 70));
+                    menu.setForeground(Color.WHITE); // Reset text color on exit
                 }
             });
 
-            menuBar.add(menuItem);
+            menuBar.add(menu);
         }
 
-        header.add(menuBar, BorderLayout.CENTER);
+        middlePanel.add(menuBar);
+
+        // Create the right panel (empty)
+        JPanel rightPanel = new JPanel();
+        rightPanel.setBackground(new Color(70, 70, 70));
+
+        // Add the left panel to the west (left) of the header
+        header.add(leftPanel, BorderLayout.WEST);
+
+        // Add the middle panel to the center of the header
+        header.add(middlePanel, BorderLayout.CENTER);
+
+        // Add the right panel to the east (right) of the header
+        header.add(rightPanel, BorderLayout.EAST);
+
+        // Add the main header panel to the frame
         add(header, BorderLayout.NORTH);
     }
 
-    private void initializeGridLayout() {
-        // Left and Right Grids
+    private void createGridStructure() {
+        // Create left, middle, and right grids
         JPanel leftGrid = new JPanel();
         JPanel rightGrid = new JPanel();
-
-        leftGrid.setBackground(new Color(240, 240, 245)); // Subtle difference from the page background
+        leftGrid.setBackground(new Color(240, 240, 245));
         rightGrid.setBackground(new Color(240, 240, 245));
 
-        // Middle Grid (Posts Section)
-        middleGrid = new JPanel(); // Initialize the existing 'middleGrid' instead of declaring a new one
+        // Create the middle grid (Posts Section)
+        middleGrid = new JPanel();
         middleGrid.setLayout(new BoxLayout(middleGrid, BoxLayout.Y_AXIS));
-        middleGrid.setBackground(new Color(245, 245, 250)); // Again, a subtle difference
+        middleGrid.setBackground(new Color(245, 245, 250));
 
-        // Sample Posts
-        for (int i = 1; i <= 100; i++) {
-            JPanel post = new JPanel();
-            post.setPreferredSize(new Dimension(900, 150)); // Fixed width and height
-            post.setMaximumSize(new Dimension(900, 150)); // Fixed width and height
-            post.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // Margins around the post
-            post.setBackground(new Color(250, 250, 255));
-            post.setLayout(new BorderLayout());
-
-            // Adding some shadow for depth
-            post.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 225)));
-
-            // For rounded corners and shadow (modern look)
-            post.setBorder(BorderFactory.createCompoundBorder(
-                    post.getBorder(),
-                    BorderFactory.createEmptyBorder(5, 5, 5, 5) // Internal padding for the rounded look
-            ));
-
-            JLabel postContent = new JLabel("Sample Post Content " + i, SwingConstants.CENTER);
-            post.add(postContent, BorderLayout.CENTER);
-
-            middleGrid.add(post);
+        // Retrieve posts from DataStorageManager
+        ArrayList<Post> posts = dataStorageManager.getPosts();
+        for (Post post : posts) {
+            JPanel postPanel = createPostPanel(post);
+            middleGrid.add(postPanel);
         }
 
         // Add Grids to the main layout
@@ -116,22 +133,46 @@ public class MainPlatformFrame extends JFrame {
 
         // Add middleGrid wrapped in a JScrollPane to enable scrolling
         JScrollPane scrollPane = new JScrollPane(middleGrid);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(14); // scroll speed
+
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    private void initializeFooter() {
-        // Create footer panel
-        JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        footer.setBackground(new Color(220, 220, 220)); // Light gray background for the footer
 
+    private JPanel createPostPanel(Post post) {
+        JPanel postPanel = new JPanel();
+        postPanel.setPreferredSize(new Dimension(900, 150)); // Fixed width and height
+        postPanel.setMaximumSize(new Dimension(900, 150)); // Fixed width and height
+        postPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        postPanel.setBackground(new Color(250, 250, 255));
+        postPanel.setLayout(new BorderLayout());
+        postPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(220, 220, 225)));
+        postPanel.setBorder(BorderFactory.createCompoundBorder(
+                postPanel.getBorder(),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        ));
+
+        JLabel postTitle = new JLabel("<html><b>" + post.getTitle() + "</b></html>", SwingConstants.CENTER);
+        JLabel postContent = new JLabel(post.getContent(), SwingConstants.CENTER);
+
+        postPanel.add(postTitle, BorderLayout.NORTH);
+        postPanel.add(postContent, BorderLayout.CENTER);
+
+        return postPanel;
+    }
+
+    private void initializeFooter() {
+        JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        footer.setBackground(new Color(220, 220, 220));
         JLabel footerLabel = new JLabel("© 2023 Halaqa Community. All rights reserved.");
         footer.add(footerLabel);
-
         add(footer, BorderLayout.SOUTH);
     }
 
     public static void main(String[] args) {
-
-        SwingUtilities.invokeLater(() -> new MainPlatformFrame());
+        ProjectPopulator populate = new ProjectPopulator();
+        populate.main(args);
+        DataStorageManager ds = populate.getDataStorageManager();
+        SwingUtilities.invokeLater(() -> new MainPlatformFrame(ds));
     }
 }
