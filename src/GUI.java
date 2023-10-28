@@ -43,7 +43,6 @@ public class GUI extends JFrame {
                 GUI.this.dispose();
 
                 // Open the main platform frame
-                new MainPlatformFrame();
             }
         });
 
@@ -60,7 +59,4 @@ public class GUI extends JFrame {
         add(rightPanel);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GUI());
-    }
 }

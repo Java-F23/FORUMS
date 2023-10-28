@@ -207,7 +207,7 @@ class DataStorageManager {
     }
 
     public void addPost(Post post) {
-        posts.add(post);
+        posts.add(0, post);
     }
 
     public void addComment(Comment comment) {

@@ -1,9 +1,10 @@
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ProjectPopulator {
-    public static void main(String[] args) {
+    public static DataStorageManager populate() {
 
         DataStorageManager dataStorageManager = getDataStorageManager();
 
@@ -14,7 +15,7 @@ public class ProjectPopulator {
 
 
         // Test upvoting and downvoting comments, liking posts, and viewing posts
-        for (int i = 0; i < 68; i++) {
+        for (int i = 0; i < 105; i++) {
             user = dataStorageManager.getUsers().get(i % dataStorageManager.getUsers().size());
             post = dataStorageManager.getPosts().get(i % dataStorageManager.getPosts().size());
             comment = dataStorageManager.getComments().get(i % dataStorageManager.getComments().size());
@@ -25,9 +26,8 @@ public class ProjectPopulator {
             dataStorageManager.viewPost(user, post);
         }
 
-        // System.out.println("After population: ");
-        // statistics = dataStorageManager.generateStatistics();
-        // dataStorageManager.printStatistics(statistics);
+
+        return dataStorageManager;
 
 
     }
@@ -35,9 +35,8 @@ public class ProjectPopulator {
     public static DataStorageManager getDataStorageManager() {
         DataStorageManager dataStorageManager = new DataStorageManager();
 
-        // Map<String, Object> statistics = dataStorageManager.generateStatistics();
-        // System.out.println("Before population: ");
-        // dataStorageManager.printStatistics(statistics);
+        Map<String, Object> statistics = dataStorageManager.generateStatistics();
+        System.out.println("Before population: ");
 
         // Load user, post, and comment data from JSON files
         dataStorageManager.loadUsersDataFromJSON("users_data.json");

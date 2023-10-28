@@ -15,13 +15,14 @@ class Post {
     private int viewCount;
     private int likeCount;
     private ArrayList<Comment> comments;
-
+    private ArrayList<String> test;
     private static int nextPostID = 1;
 
     public Post(){
 
     }
     public Post(String title, String content, User author) {
+        test = new ArrayList<String>();
         comments = new ArrayList<Comment>();
         this.postID = generateUniquePostID();
         this.title = title;
@@ -84,13 +85,11 @@ class Post {
     }
 
     public void incrementViewCount(User user) {
-        if(user != null)
-            viewCount++;
+        this.viewCount++;
     }
 
     public void incrementLikeCount(User user) {
-        if(user != null)
-            likeCount++;
+        this.likeCount++;
     }
 
     public ArrayList<Comment> getComments() {
@@ -102,6 +101,7 @@ class Post {
         comments.add(comment);
     }
 
+    public ArrayList<String> getTest() { return test;}
     public void deleteComment(Comment comment) {
         Iterator<Comment> iterator = comments.iterator();
         while (iterator.hasNext()) {
