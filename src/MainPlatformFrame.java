@@ -5,6 +5,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class MainPlatformFrame extends JFrame {
     private static final Dimension POST_DIMENSION = new Dimension(900, 150);
@@ -18,12 +19,18 @@ public class MainPlatformFrame extends JFrame {
     private static final User testUser = new User("test_user", "test_password", UserRole.NORMAL_USER);
 
 
+    private JScrollPane scrollPane;
+
     private JPanel middleGrid;
     private DataStorageManager dataStorageManager;
+    private JPanel leftSidebar;
+    private JPanel rightSidebar;
 
     public MainPlatformFrame() {
         dataStorageManager = ProjectPopulator.populate();
         initializeFrame();
+
+
     }
 
     private void initializeFrame() {
@@ -34,11 +41,48 @@ public class MainPlatformFrame extends JFrame {
         setLayout(new BorderLayout());
 
         add(createHeader(), BorderLayout.NORTH);
-        createGridStructure();
+        createCenterContentWithSidebars();
         add(createFooter(), BorderLayout.SOUTH);
 
         setVisible(true);
     }
+
+    private void createCenterContentWithSidebars() {
+        // Create the sidebars
+        leftSidebar = createSidebar("Left Sidebar");
+        rightSidebar = createSidebar("Right Sidebar");
+
+        // Create the central grid structure
+        createGridStructure();
+
+        // Container to hold the sidebars and grid structure
+        JPanel mainContentPanel = new JPanel(new BorderLayout());
+        mainContentPanel.add(leftSidebar, BorderLayout.WEST);
+        mainContentPanel.add(scrollPane, BorderLayout.CENTER); // Note: grid structure is now inside a scrollPane
+        mainContentPanel.add(rightSidebar, BorderLayout.EAST);
+
+        // Create a scroll pane for the entire content
+        JScrollPane mainScrollPane = new JScrollPane(mainContentPanel);
+        mainScrollPane.getVerticalScrollBar().setUnitIncrement(14);
+
+        // Add this main scroll pane to the frame's center
+        add(mainScrollPane, BorderLayout.CENTER);
+    }
+
+    private JPanel createSidebar(String title) {
+        JPanel sidebar = new JPanel();
+        sidebar.setPreferredSize(new Dimension(300, getHeight()));
+        sidebar.setBackground(Color.LIGHT_GRAY);
+        sidebar.setLayout(new BoxLayout(sidebar, BoxLayout.Y_AXIS));
+
+        // Placeholder for items in the sidebar
+        for (int i = 0; i < 200; i++) {
+            sidebar.add(new JLabel(title + " Item " + (i + 1)));
+        }
+
+        return sidebar;
+    }
+
 
     private JPanel createHeader() {
 
@@ -110,12 +154,7 @@ public class MainPlatformFrame extends JFrame {
 
 
     private void createGridStructure() {
-        // Create left, middle, and right grids
-        JPanel leftGrid = new JPanel();
-        JPanel rightGrid = new JPanel();
-        rightGrid.setBackground(ACTION_COLOR);
-        // Create the middle grid (Posts Section)
-        middleGrid = new JPanel();
+        middleGrid = new ScrollablePanel();
         middleGrid.setLayout(new BoxLayout(middleGrid, BoxLayout.Y_AXIS));
 
         // Retrieve posts from DataStorageManager
@@ -139,27 +178,42 @@ public class MainPlatformFrame extends JFrame {
         contentContainer.add(inputPanelWrapper, BorderLayout.NORTH);
         contentContainer.add(middleGrid, BorderLayout.CENTER);
 
-        // Add Grids to the main layout
-        add(leftGrid, BorderLayout.WEST);
-        add(rightGrid, BorderLayout.EAST);
 
         // Add contentContainer (with inputPanel and middleGrid) wrapped in a JScrollPane
-        JScrollPane scrollPane = new JScrollPane(contentContainer);
+        scrollPane = new JScrollPane(contentContainer);
         scrollPane.getVerticalScrollBar().setUnitIncrement(14); // scroll speed
         add(scrollPane, BorderLayout.CENTER);
     }
 
     // Create a method to update the posts in the middle grid
     private void updateMiddleGrid() {
+        JScrollBar verticalScrollBar = scrollPane.getVerticalScrollBar(); // Assuming scrollPane is your JScrollPane
+
+        int scrollPosition = verticalScrollBar.getValue(); // Store the current scroll position
+
         middleGrid.removeAll();
         ArrayList<Post> posts = dataStorageManager.getPosts();
         for (Post post : posts) {
             JPanel postPanel = createPostPanel(post);
             middleGrid.add(postPanel);
         }
+
+        // Update the components
+        Dimension preferredSize = middleGrid.getPreferredSize();
+        preferredSize.height += POST_DIMENSION.height; // Assuming POST_DIMENSION.height is the height of one post
+        middleGrid.setPreferredSize(preferredSize);
         middleGrid.revalidate();
         middleGrid.repaint();
+
+        // Restore the original scroll position
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                verticalScrollBar.setValue(scrollPosition);
+            }
+        });
     }
+
     private JPanel createInputPanel() {
         // Set the attributes for inputPanel
         JPanel inputPanel = new JPanel();
@@ -227,6 +281,7 @@ public class MainPlatformFrame extends JFrame {
                 updateMiddleGrid();
             }
         });
+
         submitButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         inputPanel.add(postTitleField, BorderLayout.NORTH);
@@ -268,6 +323,15 @@ public class MainPlatformFrame extends JFrame {
         bottomPanel.setOpaque(false);
 
         JButton likesButton = createStyledButton("Likes: " + post.getLikeCount());
+        likesButton.addActionListener(e -> {
+            dataStorageManager.likePost(testUser, post); // This line toggles the like/unlike state
+            if(post.hasUserLiked(testUser)) {
+                likesButton.setText("Unlike (" + post.getLikeCount() + ")");
+            } else {
+                likesButton.setText("Like (" + post.getLikeCount() + ")");
+            }
+        });
+
         JButton commentsButton = createStyledButton("Comments: " + post.getComments().size());
         JButton reportButton = createStyledButton("Report");
 
@@ -288,4 +352,32 @@ public class MainPlatformFrame extends JFrame {
         footer.add(footerLabel);
         return footer;
     }
+
+    static class ScrollablePanel extends JPanel implements Scrollable {
+        @Override
+        public Dimension getPreferredScrollableViewportSize() {
+            return super.getPreferredSize();
+        }
+
+        @Override
+        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+            return 16;
+        }
+
+        @Override
+        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+            return 16;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportWidth() {
+            return true;
+        }
+
+        @Override
+        public boolean getScrollableTracksViewportHeight() {
+            return false;
+        }
+    }
+
 }

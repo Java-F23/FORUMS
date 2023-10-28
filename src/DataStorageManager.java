@@ -1,10 +1,5 @@
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Comparator;
+import java.util.*;
 import java.io.FileReader;
-import java.util.HashMap;
-import java.util.Map;
 
 
 import com.google.gson.Gson;
@@ -102,7 +97,9 @@ class DataStorageManager {
     }
 
     public ArrayList<Post> getPosts() {
-        return posts;
+        ArrayList<Post> reversedPosts = new ArrayList<>(posts);
+        Collections.reverse(reversedPosts);
+        return reversedPosts;
     }
 
     public Post getPostById(int postID) {
@@ -206,8 +203,8 @@ class DataStorageManager {
         return null;
     }
 
-    public void addPost(Post post) {
-        posts.add(0, post);
+    public void addPost(Post newPost) {
+        posts.add(newPost);
     }
 
     public void addComment(Comment comment) {
@@ -242,6 +239,13 @@ class DataStorageManager {
             post.incrementViewCount(user);
         }
     }
+    public void unLikePost(User user, Post post) {
+        if (user != null && post != null) {
+            post.incrementLikeCount(user);
+            post.incrementViewCount(user);
+        }
+    }
+
     public void viewPost(User user, Post post) {
         if (user != null && post != null) {
             post.incrementViewCount(user);

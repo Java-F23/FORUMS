@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import java.util.HashSet;
+import java.util.Set;
 
 class Post {
     private int postID;
@@ -14,6 +15,8 @@ class Post {
     private Date timestamp;
     private int viewCount;
     private int likeCount;
+    private Set<User> usersWhoLiked;
+
     private ArrayList<Comment> comments;
     private ArrayList<String> test;
     private static int nextPostID = 1;
@@ -29,8 +32,24 @@ class Post {
         this.content = content;
         this.author = author;
         this.timestamp = new Date(); // Use the current date and time
+        this.usersWhoLiked = new HashSet<>();
+
     }
 
+    public boolean hasUserLiked(User user) {
+        return usersWhoLiked.contains(user);
+    }
+
+    public void incrementLikeCount(User user) {
+        if (usersWhoLiked.contains(user)) {
+            // If the user has already liked, then they're unliking
+            likeCount--;
+            usersWhoLiked.remove(user);
+        } else {
+            likeCount++;
+            usersWhoLiked.add(user);
+        }
+    }
 
     public int getPostID() {
         return postID;
@@ -86,10 +105,6 @@ class Post {
 
     public void incrementViewCount(User user) {
         this.viewCount++;
-    }
-
-    public void incrementLikeCount(User user) {
-        this.likeCount++;
     }
 
     public ArrayList<Comment> getComments() {
