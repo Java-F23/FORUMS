@@ -18,7 +18,7 @@ public class HomeContent {
 
     private DataStorageManager dataStorageManager;
     private LeftSidebar leftSidebar;
-    private JPanel rightSidebar;
+    private RightSidebar rightSidebar;
     private JScrollPane scrollPane;
 
     private JPanel middleGrid;
@@ -28,12 +28,14 @@ public class HomeContent {
         this.dataStorageManager = dataStorageManager;
         this.scrollPane = new JScrollPane();
         this.leftSidebar = new LeftSidebar(dataStorageManager, this);
+        this.rightSidebar = new RightSidebar(dataStorageManager);
     }
     public JScrollPane  createMainContent() {
         // Create the sidebars
 
         JPanel leftPanel = leftSidebar.createSidebar();
-        rightSidebar =RightSidebar.createSidebar("RightSidebar");
+        leftPanel.setBackground(Color.WHITE);
+        JPanel rightPanel = rightSidebar.createSidebar();
 
         // Create the central grid structure
         createGridStructure();
@@ -42,7 +44,7 @@ public class HomeContent {
         JPanel mainContentPanel = new JPanel(new BorderLayout());
         mainContentPanel.add(leftPanel, BorderLayout.WEST);
         mainContentPanel.add(scrollPane, BorderLayout.CENTER); // Note: grid structure is now inside a scrollPane
-        mainContentPanel.add(rightSidebar, BorderLayout.EAST);
+        mainContentPanel.add(rightPanel, BorderLayout.EAST);
 
         // Create a scroll pane for the entire content
         JScrollPane mainScrollPane = new JScrollPane(mainContentPanel);

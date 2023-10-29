@@ -211,7 +211,7 @@ class DataStorageManager {
         comments.add(comment);
     }
 
-    public ArrayList<Post> filterPostsByAuthor(String authorUsername) {
+        public ArrayList<Post> filterPostsByAuthor(String authorUsername) {
         ArrayList<Post> filteredPosts = new ArrayList<>();
         for (Post post : posts) {
             if (post.getAuthor().getUsername().equals(authorUsername)) {
