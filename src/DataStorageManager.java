@@ -93,7 +93,8 @@ class DataStorageManager {
     }
 
     public void addUser(User user) {
-        users.add(user);
+        if(!users.contains(user))
+            users.add(user);
     }
 
     public ArrayList<Post> getPosts() {
