@@ -21,14 +21,12 @@ public class MainPlatformFrame extends JFrame {
     private static final User testUser = new User("test_user", "test_password", UserRole.NORMAL_USER);
 
 
-    private DataStorageManager dataStorageManager;
     private Navbar navbar;
     private HomeContent homeContent;
 
-    public MainPlatformFrame() {
-        dataStorageManager = ProjectPopulator.populate();
-        navbar = new Navbar();
-        homeContent = new HomeContent(dataStorageManager);
+    public MainPlatformFrame(MainController controller) {
+        navbar = new Navbar(controller);
+        homeContent = new HomeContent(controller);
         initializeFrame();
     }
 
@@ -46,6 +44,9 @@ public class MainPlatformFrame extends JFrame {
         setVisible(true);
     }
 
+    public HomeContent getHomeContent() {
+        return homeContent;
+    }
 
     private JPanel createFooter() {
         JPanel footer = new JPanel(new FlowLayout(FlowLayout.CENTER));

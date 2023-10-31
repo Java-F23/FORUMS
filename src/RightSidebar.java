@@ -5,10 +5,12 @@ import java.util.Map;
 
 public class RightSidebar {
 
-    private DataStorageManager dataStorageManager;
+    private DefaultTableModel tableModel;
 
-    public RightSidebar(DataStorageManager dataStorageManager) {
-        this.dataStorageManager = dataStorageManager;
+    public RightSidebar() {
+        String[] columnNames = {"Statistic", "Value"};
+        tableModel = new DefaultTableModel(columnNames, 0);
+
     }
 
     public JPanel createSidebar() {
@@ -26,18 +28,12 @@ public class RightSidebar {
         // Create the JTable for statistics
         String[] columnNames = {"Statistic", "Value"};
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-        JTable statsTable = new JTable(model);
+        JTable statsTable = new JTable(tableModel);
         statsTable.setEnabled(false); // Make the table not editable
         statsTable.setShowGrid(false); // Hide grid lines
         statsTable.setTableHeader(null); // Hide table header
         statsTable.setRowHeight(25);
         statsTable.setFillsViewportHeight(true);
-
-        Map<String, Object> statistics = dataStorageManager.generateStatistics();
-        for (String key : statistics.keySet()) {
-            model.addRow(new Object[]{key, statistics.get(key)});
-        }
-
         JScrollPane tableScrollPane = new JScrollPane(statsTable);
         tableScrollPane.setPreferredSize(new Dimension(250, statsTable.getRowHeight() * model.getRowCount()));
         tableScrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -49,4 +45,11 @@ public class RightSidebar {
 
         return sidebar;
     }
+    public void updateStatistics(Map<String, Object> statistics) {
+        tableModel.setRowCount(0); // Clear existing data
+        for (String key : statistics.keySet()) {
+            tableModel.addRow(new Object[]{key, statistics.get(key)});
+        }
+    }
+
 }

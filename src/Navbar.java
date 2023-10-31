@@ -7,11 +7,17 @@ class Navbar {
     private static final Color PRIMARY_COLOR = new Color(60, 130, 190); // Calm Blue
     private static final Color ACTION_COLOR = new Color(220, 80, 60); // Vibrant Red for actions
 
-    public JPanel createHeader() {
+    private MainController controller;
 
+    // Constructor to accept the controller
+    public Navbar(MainController controller) {
+        this.controller = controller;
+    }
+
+    public JPanel createHeader() {
         JPanel header = new JPanel(new BorderLayout());
         header.setPreferredSize(new Dimension(1600, 45));
-        header.setBackground(new Color(60, 130, 190));
+        header.setBackground(PRIMARY_COLOR);
 
         // Create right panel for the logo image aligned to the left of the panel
         ImageIcon logo = new ImageIcon("logo.png");
@@ -27,6 +33,7 @@ class Navbar {
         // Create left panel for the logout button aligned to the right of the panel
         JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 5));
         JButton logoutButton = createStyledButton("Logout");
+        logoutButton.addActionListener(e -> controller.logout()); // This method needs to be created in the controller
         logoutPanel.add(logoutButton);
         logoutPanel.setBackground(new Color(60, 130, 190));
         header.add(logoutPanel, BorderLayout.EAST);
@@ -35,8 +42,11 @@ class Navbar {
         JPanel navigationPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 200, 6));
         navigationPanel.setBackground(new Color(60, 130, 190));
         JButton homeButton = createStyledButton("Home");
+        homeButton.addActionListener(e -> controller.switchToHomePanel());
         JButton profileButton = createStyledButton("Profile");
+        //profileButton.addActionListener(e -> controller.switchToProfilePanel()); // This method needs to be created in the controller
         JButton settingsButton = createStyledButton("Settings");
+        settingsButton.addActionListener(e -> controller.switchToSettingsPanel());
 
         navigationPanel.add(homeButton);
         navigationPanel.add(profileButton);

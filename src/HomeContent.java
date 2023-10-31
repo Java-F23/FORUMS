@@ -3,6 +3,8 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HomeContent {
     private static final Dimension POST_DIMENSION = new Dimension(900, 150);
@@ -14,79 +16,85 @@ public class HomeContent {
     private static final Color ACCENT_COLOR = new Color(45, 100, 160); // Darker Blue
     private static final Color TEXT_PRIMARY = new Color(20, 20, 20); // Almost Black
     private static final Color TEXT_SECONDARY = new Color(120, 120, 120); // Soft Gray
-    private static final User testUser = new User("test_user", "test_password", UserRole.NORMAL_USER);
 
-    private DataStorageManager dataStorageManager;
+    private Map<Integer, JButton> likeButtonsMap;
+
+    private InputPanel inputPanel;
     private LeftSidebar leftSidebar;
     private RightSidebar rightSidebar;
     private JScrollPane scrollPane;
-
     private JPanel middleGrid;
+    private MainController mainController; // Use this to interact with the model
+    JButton likesButton;
 
-
-    public HomeContent(DataStorageManager dataStorageManager) {
-        this.dataStorageManager = dataStorageManager;
+    public HomeContent(MainController controller) {
+        this.mainController = controller;
         this.scrollPane = new JScrollPane();
-        this.leftSidebar = new LeftSidebar(dataStorageManager, this);
-        this.rightSidebar = new RightSidebar(dataStorageManager);
+        this.leftSidebar = new LeftSidebar(controller);
+        this.rightSidebar = new RightSidebar();
+        this.inputPanel = new InputPanel(e -> handlePostSubmission());
+        likeButtonsMap = new HashMap<>();
     }
-    public JScrollPane  createMainContent() {
-        // Create the sidebars
 
+    public void handlePostSubmission() {
+        String title = inputPanel.getPostTitle();
+        String content = inputPanel.getPostContent();
+        mainController.handlePostSubmission(title, content);
+        inputPanel.clearInputFields();
+    }
+
+    public JScrollPane createMainContent() {
         JPanel leftPanel = leftSidebar.createSidebar();
         leftPanel.setBackground(Color.WHITE);
         JPanel rightPanel = rightSidebar.createSidebar();
 
-        // Create the central grid structure
         createGridStructure();
+        updateStatistics();
 
-        // Container to hold the sidebars and grid structure
         JPanel mainContentPanel = new JPanel(new BorderLayout());
         mainContentPanel.add(leftPanel, BorderLayout.WEST);
-        mainContentPanel.add(scrollPane, BorderLayout.CENTER); // Note: grid structure is now inside a scrollPane
+        mainContentPanel.add(scrollPane, BorderLayout.CENTER);
         mainContentPanel.add(rightPanel, BorderLayout.EAST);
 
-        // Create a scroll pane for the entire content
         JScrollPane mainScrollPane = new JScrollPane(mainContentPanel);
         mainScrollPane.getVerticalScrollBar().setUnitIncrement(14);
 
-        // Add this main scroll pane to the frame's center
-
         return mainScrollPane;
     }
+    public void updateStatistics() {
+        // Assuming rightSidebar is a class member and is already initialized
+        mainController.updateStatisticsInView(rightSidebar);
+    }
+
 
     public JScrollPane createGridStructure() {
         middleGrid = new MainPlatformFrame.ScrollablePanel();
         middleGrid.setLayout(new BoxLayout(middleGrid, BoxLayout.Y_AXIS));
-        middleGrid.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));  // This line lets the middleGrid grow vertically.
+        middleGrid.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
 
-        // Retrieve posts from DataStorageManager
-        ArrayList<Post> posts = dataStorageManager.getPosts();
+        ArrayList<Post> posts = mainController.getPosts();
         for (Post post : posts) {
             JPanel postPanel = createPostPanel(post);
             middleGrid.add(postPanel);
         }
 
-        // Create a panel for the input panel
         JPanel inputPanelWrapper = new JPanel(new BorderLayout());
         inputPanelWrapper.setLayout(new BoxLayout(inputPanelWrapper, BoxLayout.Y_AXIS));
-        inputPanelWrapper.add(createInputPanel(), BorderLayout.CENTER);
-        // Add vertical spacing between inputPanelWrapper and middleGrid
-        inputPanelWrapper.add(Box.createVerticalStrut(20)); // Adjust the spacing as needed
+        inputPanelWrapper.add(inputPanel.getPanel(), BorderLayout.CENTER);
+        inputPanelWrapper.add(Box.createVerticalStrut(20));
 
-        // Create a container for the input panel and the middle grid
         JPanel contentContainer = new JPanel();
         contentContainer.setLayout(new BorderLayout());
         contentContainer.add(inputPanelWrapper, BorderLayout.NORTH);
         contentContainer.add(middleGrid, BorderLayout.CENTER);
 
-        // Add contentContainer (with inputPanel and middleGrid) wrapped in a JScrollPane
         scrollPane = new JScrollPane(contentContainer);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(14); // scroll speed
+        scrollPane.getVerticalScrollBar().setUnitIncrement(14);
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
-        return scrollPane;  // Return the scrollPane instead of adding it.
+        return scrollPane;
     }
+
     // Create a method to update the posts in the middle grid
     public void updateMiddleGrid(ArrayList<Post> postsToShow) {
         if (scrollPane == null || middleGrid == null) {
@@ -118,88 +126,6 @@ public class HomeContent {
                 verticalScrollBar.setValue(scrollPosition);
             }
         });
-    }
-    private JPanel createInputPanel() {
-
-        // Set the attributes for inputPanel
-        JPanel inputPanel = new JPanel();
-        inputPanel.setPreferredSize(POST_INPUT_DIMENSION); // Fixed width and height
-        inputPanel.setMaximumSize(POST_INPUT_DIMENSION); // Fixed width and height
-        inputPanel.setBackground(SECONDARY_COLOR);
-        inputPanel.setLayout(new BorderLayout());
-        inputPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
-
-
-        JTextField postTitleField = new JTextField("Sample Title...");
-        JTextArea postContentArea = new JTextArea("Sample Content.");
-
-        // Add focus listeners for placeholders
-        postTitleField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (postTitleField.getText().equals("Sample Title...")) {
-                    postTitleField.setText("");
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (postTitleField.getText().isEmpty()) {
-                    postTitleField.setText("Sample Title...");
-                }
-            }
-        });
-
-        postContentArea.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                if (postContentArea.getText().equals("Sample Content.")) {
-                    postContentArea.setText("");
-                }
-            }
-
-            @Override
-            public void focusLost(FocusEvent e) {
-                if (postContentArea.getText().isEmpty()) {
-                    postContentArea.setText("Sample Content.");
-                }
-            }
-        });
-
-        postTitleField.setFont(new Font("Arial", Font.BOLD, 20));
-        postTitleField.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-
-        postContentArea.setWrapStyleWord(true);
-        postContentArea.setLineWrap(true);
-        postContentArea.setFont(new Font("Calibri", Font.PLAIN, 18));
-        postContentArea.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-
-        JButton submitButton = Navbar.createStyledButton("Post");
-        submitButton.addActionListener(e -> {
-            String title = postTitleField.getText();
-            String content = postContentArea.getText();
-            if (!title.isEmpty() && !content.isEmpty() && !title.equals("Sample Title...") && !content.equals("Sample Content.")) {
-                User user = testUser;
-                Post newPost = new Post(title, content, user);
-                dataStorageManager.addPost(newPost);
-                dataStorageManager.addUser(user);
-
-                // Refresh the left sidebar
-                leftSidebar.updateUserList();
-
-                postTitleField.setText("");
-                postContentArea.setText("");
-                updateMiddleGrid(dataStorageManager.getPosts());
-            }
-        });
-
-        submitButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-
-        inputPanel.add(postTitleField, BorderLayout.NORTH);
-        inputPanel.add(postContentArea, BorderLayout.CENTER); // Added JScrollPane for larger text content
-        inputPanel.add(submitButton, BorderLayout.SOUTH);
-
-        return inputPanel;
     }
 
 
@@ -234,14 +160,8 @@ public class HomeContent {
         bottomPanel.setOpaque(false);
 
         JButton likesButton = Navbar.createStyledButton("Likes: " + post.getLikeCount());
-        likesButton.addActionListener(e -> {
-            dataStorageManager.likePost(testUser, post); // This line toggles the like/unlike state
-            if(post.hasUserLiked(testUser)) {
-                likesButton.setText("Unlike (" + post.getLikeCount() + ")");
-            } else {
-                likesButton.setText("Like (" + post.getLikeCount() + ")");
-            }
-        });
+        likesButton.addActionListener(e -> mainController.toggleLikePost(post, likesButton));
+        likeButtonsMap.put(post.getPostID(), likesButton); // Store the button with the post's ID as key
 
         JButton commentsButton = Navbar.createStyledButton("Comments: " + post.getComments().size());
         JButton reportButton = Navbar.createStyledButton("Report");
@@ -257,6 +177,24 @@ public class HomeContent {
         return postPanel;
     }
 
+    public void refreshLikes(Post post) {
+        JButton likeButton = likeButtonsMap.get(post.getPostID()); // Get the button for this post
+        if (likeButton != null) {
+            if (post.hasUserLiked(mainController.getCurrentUser())) {
+                likeButton.setText("Unlike (" + post.getLikeCount() + ")");
+            } else {
+                likeButton.setText("Like (" + post.getLikeCount() + ")");
+            }
+        }
+    }
 
 
+    public LeftSidebar getLeftSidebar() {
+        return leftSidebar;
+    }
+
+    public JButton getLikesButton() {
+        return likesButton;
+    }
 }
+
