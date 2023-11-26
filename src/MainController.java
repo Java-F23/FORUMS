@@ -1,11 +1,14 @@
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 public class MainController {
     private MainPlatformFrame mainFrame;
     private DataStorageManager model;
     private User currentUser = new User("testUser", "testPassword", UserRole.ADMIN);
+    private Map<Integer, JButton> postLikeButtons = new HashMap<>();
+
     public MainController() {
         // Initialize the data model
         model = ProjectPopulator.populate();
@@ -58,16 +61,45 @@ public class MainController {
         return  model.generateStatistics();
     }
 
-    public void toggleLikePost(Post post, JButton likeButton) {
-        // Update the like count of the post in the model
-        model.likePost(currentUser, post); // assuming model.toggleLike() returns new like status
-        mainFrame.getHomeContent().refreshLikes(post); // Now just refreshes the UI for this post
+    public void registerLikeButtonForPost(Post post, JButton likeButton) {
+        postLikeButtons.put(post.getPostID(), likeButton);
+        refreshLikeButton(post);
     }
+
+    public void toggleLikePost(Post post) {
+        boolean isLiked = model.likePost(currentUser, post); // Toggle like status in the model
+        refreshLikeButton(post); // Refresh the UI for the like button associated with this post
+    }
+
+    private void refreshLikeButton(Post post) {
+        JButton likeButton = postLikeButtons.get(post.getPostID());
+        if (likeButton != null) {
+            updateLikeButton(likeButton, post, model.hasUserLikedPost(currentUser, post));
+        }
+    }
+
+    public void updateLikeButton(JButton likeButton, Post post, boolean isLiked) {
+        // Update the text of the like button to reflect the current like status
+        if (isLiked) {
+            likeButton.setText("Unlike (" + post.getLikeCount() + ")");
+        } else {
+            likeButton.setText("Like (" + post.getLikeCount() + ")");
+        }
+    }
+
+
+    public void handlePostReport(Post post, String reason) {
+        model.reportPost(currentUser, post, reason);
+    }
+    
+    public void handleCommentReport(Comment comment, String reason) {
+        model.reportComment(currentUser, comment, reason);
+    }
+
 
     public void filterPostsByAuthorAndUpdateView(String author) {
         ArrayList<Post> filteredPosts;
         if (author.equals("All Users") || author.isEmpty()) {
-            // Handle the case where no filter is intended
             filteredPosts = model.getPosts();
         } else {
             // Filter logic here
@@ -109,5 +141,24 @@ public class MainController {
 
     public void logout() {
 
+    }
+
+    public void switchToProfilePanel() {
+    }
+
+    public void addComment(Comment comment) {
+        // Add the comment to the data storage manager
+        model.addComment(comment);
+
+        // Assuming you want to update the UI after adding a comment, you can call the following method
+        updateMiddleGrid(); // or any other method you use to update the UI
+    }
+
+    public ArrayList<Comment> getCommentsForPost(Post post) {
+        if(model.getCommentsForPost(post) == null)
+            System.out.println("null comments");
+        else if(model.getCommentsForPost(post).size() == 0)
+            System.out.println("empty comments");
+        return model.getCommentsForPost(post);
     }
 }

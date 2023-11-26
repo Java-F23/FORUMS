@@ -60,12 +60,12 @@ class DataStorageManager {
         System.out.println("Total Views: " + statistics.get("TotalViews"));
 
     }
-    public void reportPost(Post post, User reporter, String reason) {
+    public void reportPost(User reporter, Post post, String reason) {
         Report report = new Report(reporter, post, reason);
         reports.add(report);
     }
 
-    public void reportComment(Comment comment, User reporter, String reason) {
+    public void reportComment(User reporter, Comment comment, String reason) {
         Report report = new Report(reporter, comment, reason);
         reports.add(report);
     }
@@ -233,18 +233,23 @@ class DataStorageManager {
             comment.downvote(user);
         }
     }
+    public boolean likePost(User user, Post post) {
+        if (user == null || post == null) {
+            return false; // In case of null user or post, return false
+        }
 
-    public void likePost(User user, Post post) {
-        if (user != null && post != null) {
-            post.incrementLikeCount(user);
-            post.incrementViewCount(user);
+        // Assuming there is a method in Post that can check if a user has liked the post
+        if (post.hasUserLiked(user)) {
+            post.decrementLikeCount(user); // Assuming this method also handles removing the user from the list of likers
+            return false; // The user has unliked the post
+        } else {
+            post.incrementLikeCount(user); // Assuming this method also handles adding the user to the list of likers
+            return true; // The user has liked the post
         }
     }
-    public void unLikePost(User user, Post post) {
-        if (user != null && post != null) {
-            post.incrementLikeCount(user);
-            post.incrementViewCount(user);
-        }
+    public boolean hasUserLikedPost(User currentUser, Post post) {
+        // This assumes there is a method in Post that returns the set of users who liked it
+        return post.getUsersWhoLiked().contains(currentUser);
     }
 
     public void viewPost(User user, Post post) {
@@ -320,6 +325,10 @@ class DataStorageManager {
             }
         }
         return matchingPosts;
+    }
+
+    public ArrayList<Comment> getCommentsForPost(Post post) {
+        return post.getComments();
     }
 }
 

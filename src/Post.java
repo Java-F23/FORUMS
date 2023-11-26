@@ -21,6 +21,10 @@ class Post {
     private ArrayList<String> test;
     private static int nextPostID = 1;
 
+    public Set<User> getUsersWhoLiked() {
+        return usersWhoLiked;
+    }
+
     public Post(){
 
     }
@@ -36,19 +40,28 @@ class Post {
 
     }
 
+    public boolean toggleLikeByUser(User user) {
+        if (usersWhoLiked.contains(user)) {
+            usersWhoLiked.remove(user);
+            return false; // User has unliked the post
+        } else {
+            usersWhoLiked.add(user);
+            return true; // User has liked the post
+        }
+    }
+
     public boolean hasUserLiked(User user) {
         return usersWhoLiked.contains(user);
     }
 
     public void incrementLikeCount(User user) {
-        if (usersWhoLiked.contains(user)) {
-            // If the user has already liked, then they're unliking
-            likeCount--;
-            usersWhoLiked.remove(user);
-        } else {
             likeCount++;
             usersWhoLiked.add(user);
-        }
+    }
+
+    public void decrementLikeCount(User user) {
+        likeCount--;
+        usersWhoLiked.remove(user);
     }
 
     public int getPostID() {

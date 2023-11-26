@@ -1,9 +1,12 @@
+import java.util.Date;
+
 class Report {
     private int reportID;
     private User reporter;
     private Object reportedItem; // Can be a Post or Comment
     private String reason;
     private boolean resolved;
+    private Date timestamp;
 
     public Report(User reporter, Object reportedItem, String reason) {
         this.reportID = generateUniqueReportID();
@@ -11,6 +14,7 @@ class Report {
         this.reportedItem = reportedItem;
         this.reason = reason;
         this.resolved = false;
+        this.timestamp = new Date();
     }
 
     private static int nextReportID = 1;
@@ -41,6 +45,10 @@ class Report {
         return resolved;
     }
 
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
     public void resolveReport() {
         resolved = true;
     }
@@ -53,6 +61,7 @@ class Report {
                 ", reportedItem=" + reportedItem +
                 ", reason='" + reason + '\'' +
                 ", resolved=" + resolved +
+                ", timestamp=" + timestamp +
                 '}';
     }
 }

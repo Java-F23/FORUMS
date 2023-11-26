@@ -6,7 +6,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class MainPlatformFrame extends JFrame {
     private static final Dimension POST_DIMENSION = new Dimension(900, 150);

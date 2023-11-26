@@ -2,12 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class HomeContent {
     private static final Dimension POST_DIMENSION = new Dimension(900, 150);
+
     private static final Dimension POST_INPUT_DIMENSION = new Dimension(900, 200);
     private static final Color PRIMARY_COLOR = new Color(60, 130, 190); // Calm Blue
     private static final Color ACTION_COLOR = new Color(220, 80, 60); // Vibrant Red for actions
@@ -17,7 +19,6 @@ public class HomeContent {
     private static final Color TEXT_PRIMARY = new Color(20, 20, 20); // Almost Black
     private static final Color TEXT_SECONDARY = new Color(120, 120, 120); // Soft Gray
 
-    private Map<Integer, JButton> likeButtonsMap;
 
     private InputPanel inputPanel;
     private LeftSidebar leftSidebar;
@@ -33,7 +34,6 @@ public class HomeContent {
         this.leftSidebar = new LeftSidebar(controller);
         this.rightSidebar = new RightSidebar();
         this.inputPanel = new InputPanel(e -> handlePostSubmission());
-        likeButtonsMap = new HashMap<>();
     }
 
     public void handlePostSubmission() {
@@ -61,6 +61,8 @@ public class HomeContent {
 
         return mainScrollPane;
     }
+
+
     public void updateStatistics() {
         // Assuming rightSidebar is a class member and is already initialized
         mainController.updateStatisticsInView(rightSidebar);
@@ -130,62 +132,7 @@ public class HomeContent {
 
 
     private JPanel createPostPanel(Post post) {
-        JPanel postPanel = new JPanel();
-        postPanel.setPreferredSize(POST_DIMENSION); // Fixed width and height
-        postPanel.setMaximumSize(POST_DIMENSION);
-        postPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        postPanel.setBackground(Color.WHITE);
-        postPanel.setLayout(new BorderLayout());
-
-        // Add a border at the bottom with some padding for visual separation
-        postPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, ACCENT_COLOR.darker()),
-                BorderFactory.createEmptyBorder(0, 5, 0, 5)
-        ));
-
-        JLabel postTitle = new JLabel(post.getTitle());
-        postTitle.setFont(new Font("Arial", Font.BOLD, 20));
-        postTitle.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-
-        JTextArea postContentArea = new JTextArea(post.getContent());
-        postContentArea.setWrapStyleWord(true);
-        postContentArea.setLineWrap(true);
-        postContentArea.setOpaque(false);
-        postContentArea.setEditable(false);
-        postContentArea.setFont(new Font("Calibri", Font.PLAIN, 18));
-        postContentArea.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-
-        // Create a panel for the bottom elements
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        bottomPanel.setOpaque(false);
-
-        JButton likesButton = Navbar.createStyledButton("Likes: " + post.getLikeCount());
-        likesButton.addActionListener(e -> mainController.toggleLikePost(post, likesButton));
-        likeButtonsMap.put(post.getPostID(), likesButton); // Store the button with the post's ID as key
-
-        JButton commentsButton = Navbar.createStyledButton("Comments: " + post.getComments().size());
-        JButton reportButton = Navbar.createStyledButton("Report");
-
-        bottomPanel.add(likesButton);
-        bottomPanel.add(commentsButton);
-        bottomPanel.add(reportButton);
-
-        postPanel.add(postTitle, BorderLayout.NORTH);
-        postPanel.add(postContentArea, BorderLayout.CENTER);
-        postPanel.add(bottomPanel, BorderLayout.SOUTH);
-
-        return postPanel;
-    }
-
-    public void refreshLikes(Post post) {
-        JButton likeButton = likeButtonsMap.get(post.getPostID()); // Get the button for this post
-        if (likeButton != null) {
-            if (post.hasUserLiked(mainController.getCurrentUser())) {
-                likeButton.setText("Unlike (" + post.getLikeCount() + ")");
-            } else {
-                likeButton.setText("Like (" + post.getLikeCount() + ")");
-            }
-        }
+        return new PostPanel(post, mainController);
     }
 
 

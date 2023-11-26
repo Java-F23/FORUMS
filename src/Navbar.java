@@ -44,7 +44,7 @@ class Navbar {
         JButton homeButton = createStyledButton("Home");
         homeButton.addActionListener(e -> controller.switchToHomePanel());
         JButton profileButton = createStyledButton("Profile");
-        //profileButton.addActionListener(e -> controller.switchToProfilePanel()); // This method needs to be created in the controller
+        profileButton.addActionListener(e -> controller.switchToProfilePanel()); // This method needs to be created in the controller
         JButton settingsButton = createStyledButton("Settings");
         settingsButton.addActionListener(e -> controller.switchToSettingsPanel());
 
