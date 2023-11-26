@@ -128,8 +128,8 @@ public class PostPanel extends JPanel {
     }
 
     private void handlePostDetails() {
-        // Open the PostDetailView with the selected post
-        PostDetailView postDetailView = new PostDetailView(post, mainController);
+        // Open the PostDetailView with the selected post and pass the commentsButton
+        PostDetailView postDetailView = new PostDetailView(post, mainController, commentsButton);
         postDetailView.setVisible(true);
     }
 

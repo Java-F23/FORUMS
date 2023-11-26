@@ -155,10 +155,6 @@ public class MainController {
     }
 
     public ArrayList<Comment> getCommentsForPost(Post post) {
-        if(model.getCommentsForPost(post) == null)
-            System.out.println("null comments");
-        else if(model.getCommentsForPost(post).size() == 0)
-            System.out.println("empty comments");
         return model.getCommentsForPost(post);
     }
 }
