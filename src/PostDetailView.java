@@ -65,18 +65,31 @@ public class PostDetailView extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    // Inside the handleAddComment method
     private void handleAddComment() {
         String commentContent = JOptionPane.showInputDialog("Enter your comment:");
         if (commentContent != null && !commentContent.isEmpty()) {
-            // Assuming you have a method to add comments to the post in your MainController
-            post.addComment(new Comment(post, mainController.getCurrentUser(), commentContent));
-            // Refresh the UI or take appropriate action
+            // Create a new Comment
+            Comment newComment = new Comment(post, mainController.getCurrentUser(), commentContent);
+
+            // Initialize upvotes and downvotes
+            newComment.setUpvotes(0);
+            newComment.setDownvotes(0);
+
+            // Call the MainController to add the comment
+            mainController.addComment(newComment, post);
             updateCommentsPanel();
 
+            // Assume there is a method to get the updated comments count
+            int commentsCount = mainController.getCommentsForPost(post).size();
+
             // Update the commentsButton text and count in the PostPanel
-            commentsButton.setText("Comments: " + post.getComments().size());
+            commentsButton.setText("Comments: " + commentsCount);
         }
     }
+
+
+
 
     private void updateCommentsPanel() {
         commentsPanel.removeAll();
@@ -99,12 +112,42 @@ public class PostDetailView extends JDialog {
         JTextArea commentTextArea = new JTextArea(comment.getContent());
         commentTextArea.setEditable(false);
         JLabel userInfoLabel = new JLabel("User: " + comment.getAuthor().getUsername());
-        JLabel likesLabel = new JLabel("Likes: " + comment.getUpvotes());
+        JLabel upVotesLabel = new JLabel("Upvotes: " + comment.getUpvotes());
+        JLabel downVotesLabel = new JLabel("Downvotes: " + comment.getDownvotes());
+
+        JButton upvoteButton = new JButton("U");
+        JButton downvoteButton = new JButton("D");
+
+        upvoteButton.addActionListener(e -> handleUpvote(comment));
+        downvoteButton.addActionListener(e -> handleDownvote(comment));
+
+        JPanel votesPanel = new JPanel();
+        votesPanel.setLayout(new BoxLayout(votesPanel, BoxLayout.Y_AXIS));
+        votesPanel.add(upVotesLabel);
+        votesPanel.add(downVotesLabel);
+
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.add(upvoteButton);
+        buttonsPanel.add(downvoteButton);
 
         commentPanel.add(commentTextArea, BorderLayout.CENTER);
         commentPanel.add(userInfoLabel, BorderLayout.NORTH);
-        commentPanel.add(likesLabel, BorderLayout.SOUTH);
+        commentPanel.add(votesPanel, BorderLayout.SOUTH);
+        commentPanel.add(buttonsPanel, BorderLayout.EAST);
 
         return commentPanel;
     }
+
+
+    // New methods for handling upvote and downvote
+    private void handleUpvote(Comment comment) {
+        mainController.upvoteComment(comment);
+        updateCommentsPanel();
+    }
+
+    private void handleDownvote(Comment comment) {
+        mainController.downvoteComment(comment);
+        updateCommentsPanel();
+    }
+
 }

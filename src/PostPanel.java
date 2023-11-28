@@ -22,11 +22,15 @@ public class PostPanel extends JPanel {
     private JButton commentsButton;
     private JButton reportButton;
     private Post post;
+    private JPanel bottomPanel;
+    boolean showDeleteButton = false;
+    boolean showReportButton = false;
     private MainController mainController;
 
     public PostPanel(Post post, MainController mainController) {
         this.post = post;
         this.mainController = mainController;
+        this.bottomPanel = new JPanel();
         setLayout(new BorderLayout(10, 10));
         setPreferredSize(POST_DIMENSION);
         setMaximumSize(POST_DIMENSION);
@@ -55,6 +59,15 @@ public class PostPanel extends JPanel {
             }
         });
 
+
+        // Only show the delete button to the admin or the author
+        if (mainController.getCurrentUser().getUserType() == UserRole.ADMIN
+                || mainController.getCurrentUser().equals(post.getAuthor())) {
+            //bottomPanel.add(deleteButton);
+            showDeleteButton = true;
+        }
+        if(mainController.getCurrentUser().getUserType() == UserRole.NORMAL_USER)
+            showReportButton = true;
 
         // Add action listeners here...
         likesButton = Navbar.createStyledButton("Likes: " + post.getLikeCount());
@@ -95,7 +108,6 @@ public class PostPanel extends JPanel {
         postContentArea.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
 
-        JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.LINE_AXIS));
         bottomPanel.setOpaque(false);
         viewsLabel.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -105,8 +117,15 @@ public class PostPanel extends JPanel {
         bottomPanel.add(Box.createRigidArea(new Dimension(10, 0))); // Add space between buttons
         bottomPanel.add(viewsLabel);
         bottomPanel.add(Box.createHorizontalGlue()); // Pushes everything to the left
-        bottomPanel.add(reportButton);
+        if(showReportButton){
+            bottomPanel.add(reportButton);
+        }
 
+        if(showDeleteButton) {
+            JButton deleteButton = Navbar.createStyledButton("Delete");
+            deleteButton.addActionListener(e -> handleDeletePost());
+            bottomPanel.add(deleteButton);
+        }
         // Adding components to the postPanel
         add(headerPanel, BorderLayout.NORTH);
         add(postContentArea, BorderLayout.CENTER);
@@ -131,6 +150,24 @@ public class PostPanel extends JPanel {
         // Open the PostDetailView with the selected post and pass the commentsButton
         PostDetailView postDetailView = new PostDetailView(post, mainController, commentsButton);
         postDetailView.setVisible(true);
+    }
+
+    private void handleDeletePost() {
+        int confirmation = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to delete this post?",
+                "Confirm Deletion",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirmation == JOptionPane.YES_OPTION) {
+            // Delete the post using the mainController
+            mainController.deletePost(post);
+
+            // Close or update the UI as needed
+            // For example, you might close the PostPanel or update the view
+            // You can also notify other components that the post has been deleted
+        }
     }
 
 };

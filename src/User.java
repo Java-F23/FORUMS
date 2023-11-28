@@ -1,6 +1,7 @@
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Objects;
 
 enum UserRole {
     NORMAL_USER, ADMIN
@@ -102,11 +103,18 @@ class User {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return username.equals(user.username);
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        User other = (User) obj;
+        return Objects.equals(username, other.username);
     }
 
+    public boolean isAdmin() {
+        return userType == UserRole.ADMIN;
+    }
 }

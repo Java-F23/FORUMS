@@ -20,6 +20,15 @@ class Post {
     private ArrayList<Comment> comments;
     private ArrayList<String> test;
     private static int nextPostID = 1;
+    private boolean reportButtonDisabled;
+
+    public boolean isReportButtonDisabled() {
+        return reportButtonDisabled;
+    }
+
+    public void setReportButtonDisabled(boolean reportButtonDisabled) {
+        this.reportButtonDisabled = reportButtonDisabled;
+    }
 
     public Set<User> getUsersWhoLiked() {
         return usersWhoLiked;

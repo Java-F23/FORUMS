@@ -1,15 +1,24 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class LeftSidebar {
     private JComboBox<String> userComboBox;
-    private  MainController mainController;
-    String selectedUser;
+    private JTextField searchTextField;
+    private JButton searchButton;
+    private MainController mainController;
+    private JTextField searchField; // Add a JTextField for search
+
+
     public LeftSidebar(MainController controller) {
         this.mainController = controller;
         this.userComboBox = new JComboBox<>();
+        this.searchTextField = new JTextField();
+        // Create and add a JButton for search
+        searchButton = new JButton("Search");
+
         updateUserList(controller.getUsers());
     }
 
@@ -27,7 +36,6 @@ public class LeftSidebar {
         for (ActionListener listener : listeners) {
             userComboBox.addActionListener(listener); // Re-add listeners after update
         }
-
     }
 
     public JPanel createSidebar() {
@@ -60,6 +68,30 @@ public class LeftSidebar {
         sidebar.add(Box.createVerticalStrut(10));
         sidebar.add(userFilterPanel);
 
+        // Search Panel
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.Y_AXIS));
+        searchPanel.setBackground(Color.WHITE);
+        searchPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel searchLabel = new JLabel("Search by Keyword:");
+        searchLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        searchPanel.add(searchLabel);
+
+        // Create and add a JTextField for search
+        searchField = new JTextField();
+        searchField.setAlignmentX(Component.LEFT_ALIGNMENT);
+        searchField.setPreferredSize(new Dimension(200, 30)); // Set the preferred size
+        searchField.setMaximumSize(new Dimension(200, 30)); // Set the maximum size
+        searchPanel.add(searchField);
+
+        searchButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        searchPanel.add(searchButton);
+
+        sidebar.add(Box.createVerticalStrut(10));
+        sidebar.add(searchPanel);
+
+
         JPanel sortPanel = new JPanel();
         sortPanel.setLayout(new BoxLayout(sortPanel, BoxLayout.Y_AXIS));
         sortPanel.setBackground(Color.WHITE);
@@ -88,14 +120,17 @@ public class LeftSidebar {
         sidebar.add(sortPanel);
         sidebar.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
 
-
+        // Listeners
         userComboBox.addActionListener(e -> mainController.filterPostsByAuthorAndUpdateView((String) userComboBox.getSelectedItem()));
-
+        searchButton.addActionListener(e -> handleSearch());
         sortByDate.addActionListener(e -> mainController.sortPostsByDateAndUpdateView());
-
         sortByPopularity.addActionListener(e -> mainController.sortPostsByPopularityAndUpdateView());
 
         return sidebar;
     }
 
+    private void handleSearch() {
+        String keyword = searchField.getText(); // Change this line
+        mainController.searchPostsAndUpdateView(keyword);
+    }
 }
